@@ -1,5 +1,6 @@
 app:
-  telegram-token: unset
+  # Add your token in environment variables
+  telegram-token: ${APP_TELEGRAM_TOKEN}
 
 spring:
   application:
