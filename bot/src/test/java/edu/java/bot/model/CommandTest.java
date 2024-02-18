@@ -50,7 +50,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo("error");
+        assertThat(captor.getAllValues().getFirst()).isEqualTo("error");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo("Список отслеживаемых ссылок:\nlink\n");
+        assertThat(captor.getAllValues().getFirst()).isEqualTo("Список отслеживаемых ссылок:\nlink\n");
     }
 
     @Test
@@ -78,7 +78,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу с ботом");
     }
 
@@ -93,7 +93,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo("Сейчас вы не отслеживаете никаких ссылок");
+        assertThat(captor.getAllValues().getFirst()).isEqualTo("Сейчас вы не отслеживаете никаких ссылок");
     }
 
     @Test
@@ -107,7 +107,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы удалили все записи из бота. Чтобы снова начать работу с ботом, введите /start");
     }
 
@@ -122,7 +122,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы и так не были зарегестрированы в боте.");
     }
 
@@ -137,7 +137,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы успешно запустили бота. Теперь вы можете отслеживать ссылки. "
                 + "Чтобы узнать больше, используйте команду /help"
         );
@@ -154,7 +154,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы уже зарегестрированы в боте. Чтобы сбросить ссылки отправьте команду /reset");
     }
 
@@ -170,7 +170,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы начали отслеживание сайта. Теперь при обновлении контента по ссылке, вы получите уведомление");
     }
 
@@ -186,7 +186,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу с ботом");
     }
 
@@ -202,7 +202,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы уже отслеживаете эту ссылку. Введите /list, чтобы увидеть все отслеживаемые ссылки");
     }
 
@@ -218,7 +218,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo("Вы прекратили отслеживание ссылки");
+        assertThat(captor.getAllValues().getFirst()).isEqualTo("Вы прекратили отслеживание ссылки");
     }
 
     @Test
@@ -233,7 +233,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу");
     }
 
@@ -249,7 +249,7 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
-        assertThat(captor.getAllValues().get(0)).isEqualTo(
+        assertThat(captor.getAllValues().getFirst()).isEqualTo(
             "Вы не отслеживали эту ссылку. Введите /list, чтобы увидеть все отслеживаемые ссылки");
     }
 
