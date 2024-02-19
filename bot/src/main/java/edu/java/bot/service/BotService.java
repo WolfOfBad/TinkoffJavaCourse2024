@@ -25,7 +25,6 @@ public class BotService implements UpdatesListener, AutoCloseable {
         bot = new TelegramBot(configProperties.telegramToken());
         this.parser = parser;
 
-
         setCommandsMenu();
 
         bot.setUpdatesListener(this);
@@ -60,6 +59,11 @@ public class BotService implements UpdatesListener, AutoCloseable {
     @Override
     public int process(List<Update> list) {
         for (Update update : list) {
+            // skip edited messages
+            if (update.message() == null) {
+                continue;
+            }
+
             Command command = parser.parse(update);
             command.execute();
         }

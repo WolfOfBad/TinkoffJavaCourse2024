@@ -1,6 +1,6 @@
 package edu.java.bot.repository;
 
-import edu.java.bot.model.Link;
+import edu.java.bot.model.link.Link;
 import java.util.List;
 import java.util.Optional;
 

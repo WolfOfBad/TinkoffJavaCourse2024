@@ -1,8 +1,8 @@
 package edu.java.bot.model.command.impl;
 
-import edu.java.bot.model.Link;
 import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
+import edu.java.bot.model.link.Link;
 import edu.java.bot.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;

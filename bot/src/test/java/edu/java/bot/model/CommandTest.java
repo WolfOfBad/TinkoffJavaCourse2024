@@ -8,6 +8,7 @@ import edu.java.bot.model.command.impl.ResetCommand;
 import edu.java.bot.model.command.impl.StartCommand;
 import edu.java.bot.model.command.impl.TrackCommand;
 import edu.java.bot.model.command.impl.UntrackCommand;
+import edu.java.bot.model.link.Link;
 import edu.java.bot.repository.UserRepository;
 import java.net.URI;
 import java.util.List;

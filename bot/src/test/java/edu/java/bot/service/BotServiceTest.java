@@ -1,5 +1,6 @@
 package edu.java.bot.service;
 
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.configuration.ApplicationConfigProperties;
 import edu.java.bot.model.command.Command;
@@ -29,6 +30,7 @@ class BotServiceTest {
     public void processTest() {
         when(properties.telegramToken()).thenReturn("test_token");
         when(parser.parse(any(Update.class))).thenReturn(mock(Command.class));
+        when(update.message()).thenReturn(mock(Message.class));
 
         BotService service = new BotService(properties, parser);
         service.process(List.of(update));

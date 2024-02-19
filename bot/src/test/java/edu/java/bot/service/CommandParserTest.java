@@ -3,7 +3,6 @@ package edu.java.bot.service;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.MessageEntity;
 import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.model.Link;
 import edu.java.bot.model.User;
 import edu.java.bot.model.command.impl.FailCommand;
 import edu.java.bot.model.command.impl.HelpCommand;
@@ -12,6 +11,10 @@ import edu.java.bot.model.command.impl.ResetCommand;
 import edu.java.bot.model.command.impl.StartCommand;
 import edu.java.bot.model.command.impl.TrackCommand;
 import edu.java.bot.model.command.impl.UntrackCommand;
+import edu.java.bot.model.link.Link;
+import edu.java.bot.model.link.parser.LinkParser;
+import java.net.URI;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,6 +50,9 @@ class CommandParserTest {
 
     @Mock
     private MessageEntity messageEntity;
+
+    @Mock
+    private LinkParser linkParser;
 
     @BeforeEach
     public void before() {
@@ -93,6 +99,9 @@ class CommandParserTest {
             any(User.class),
             any(Link.class)
         )).thenReturn(mock(UntrackCommand.class));
+
+        lenient().when(linkParser.parse(any(String.class)))
+            .thenReturn(Optional.of(new Link(URI.create("uri"))));
     }
 
     @ParameterizedTest
@@ -102,7 +111,7 @@ class CommandParserTest {
             configureCommand(command);
         }
 
-        CommandParser parser = new CommandParser(context);
+        CommandParser parser = new CommandParser(context, linkParser);
 
         assertThat(parser.parse(update)).isInstanceOf(cls);
     }
@@ -111,7 +120,7 @@ class CommandParserTest {
         when(message.text()).thenReturn(command);
 
         when(messageEntity.type()).thenReturn(MessageEntity.Type.bot_command);
-        when(messageEntity.length()).thenReturn(command.length());
+        when(messageEntity.length()).thenReturn(command.split(" ")[0].length());
 
         when(update.message().entities()).thenReturn(new MessageEntity[] {messageEntity});
     }
@@ -123,8 +132,10 @@ class CommandParserTest {
             Arguments.of("/start", StartCommand.class),
             Arguments.of("/help", HelpCommand.class),
             Arguments.of("/list", ListCommand.class),
-            Arguments.of("/track", TrackCommand.class),
-            Arguments.of("/untrack", UntrackCommand.class),
+            Arguments.of("/track uri", TrackCommand.class),
+            Arguments.of("/track", FailCommand.class),
+            Arguments.of("/untrack uri", UntrackCommand.class),
+            Arguments.of("/untrack", FailCommand.class),
             Arguments.of("/reset", ResetCommand.class)
         };
     }

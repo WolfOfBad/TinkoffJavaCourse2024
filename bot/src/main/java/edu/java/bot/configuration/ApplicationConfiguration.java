@@ -1,9 +1,12 @@
 package edu.java.bot.configuration;
 
-import com.pengrad.telegrambot.model.Update;
-import edu.java.bot.model.Link;
 import edu.java.bot.model.User;
+import edu.java.bot.model.link.Link;
+import edu.java.bot.model.link.parser.GithubParser;
+import edu.java.bot.model.link.parser.LinkParser;
+import edu.java.bot.model.link.parser.StackOverflowParser;
 import edu.java.bot.service.BotService;
+import java.net.URI;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.SpringBootConfiguration;
@@ -27,8 +30,16 @@ public class ApplicationConfiguration {
 
     @Bean
     @Scope(BeanDefinition.SCOPE_PROTOTYPE)
-    public Link link(Update update) {
-        return Link.parse(update);
+    public Link link(URI uri) {
+        return new Link(uri);
+    }
+
+    @Bean
+    public LinkParser parserChain() {
+        return LinkParser.link(
+            new GithubParser(context),
+            new StackOverflowParser(context)
+        );
     }
 
 }
