@@ -1,10 +1,20 @@
 package edu.java.bot.model.link;
 
 import java.net.URI;
+import lombok.Getter;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-public record Link(
-    URI uri
-) {
+@Service
+@Scope("prototype")
+@Getter
+public class Link {
+    private final URI uri;
+
+    public Link(String uri) {
+        this.uri = URI.create(uri);
+    }
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Link)) {

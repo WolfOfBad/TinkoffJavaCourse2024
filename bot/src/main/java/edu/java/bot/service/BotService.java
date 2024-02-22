@@ -65,7 +65,7 @@ public class BotService implements UpdatesListener, AutoCloseable {
             }
 
             Command command = parser.parse(update);
-            command.execute();
+            command.execute(update);
         }
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;

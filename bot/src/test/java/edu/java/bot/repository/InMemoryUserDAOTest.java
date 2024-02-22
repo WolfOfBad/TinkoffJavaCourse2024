@@ -1,7 +1,6 @@
 package edu.java.bot.repository;
 
 import edu.java.bot.model.link.Link;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ class InMemoryUserDAOTest {
 
     @Test
     void addLinkTest() {
-        Link link = new Link(URI.create("link"));
+        Link link = new Link("link");
         long id = 1;
 
         UserRepository repository = new InMemoryUserDAO();
@@ -45,7 +44,7 @@ class InMemoryUserDAOTest {
 
     @Test
     void multipleAddLinkTest() {
-        Link link = new Link(URI.create("link"));
+        Link link = new Link("link");
         long id = 1;
 
         UserRepository repository = new InMemoryUserDAO();
@@ -59,7 +58,7 @@ class InMemoryUserDAOTest {
 
     @Test
     void userNotExistAddLinkTest() {
-        Link link = new Link(URI.create("link"));
+        Link link = new Link("link");
         long id = 1;
 
         UserRepository repository = new InMemoryUserDAO();
@@ -71,7 +70,7 @@ class InMemoryUserDAOTest {
 
     @Test
     void deleteLinkTest() {
-        Link link = new Link(URI.create("link"));
+        Link link = new Link("link");
         long id = 1;
 
         UserRepository repository = new InMemoryUserDAO();
@@ -86,7 +85,7 @@ class InMemoryUserDAOTest {
 
     @Test
     void linkNotExistDeleteLinkTest() {
-        Link link = new Link(URI.create("link"));
+        Link link = new Link("link");
         long id = 1;
 
         UserRepository repository = new InMemoryUserDAO();
@@ -99,7 +98,7 @@ class InMemoryUserDAOTest {
 
     @Test
     void userNotExistDeleteLinkTest() {
-        Link link = new Link(URI.create("link"));
+        Link link = new Link("link");
         long id = 1;
 
         UserRepository repository = new InMemoryUserDAO();
@@ -155,3 +154,4 @@ class InMemoryUserDAOTest {
         assertThat(result.isEmpty()).isTrue();
     }
 }
+

@@ -1,20 +1,26 @@
 package edu.java.bot.model.command.impl;
 
+import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.stereotype.Service;
 
+@Service
 @AllArgsConstructor
 @Slf4j
 public class StartCommand implements Command {
-    private final User user;
+    private final ObjectProvider<User> userObjectProvider;
     private final UserRepository repository;
 
     @Override
-    public void execute() {
-        UserRepository.Result result = repository.register(user.id());
+    public void execute(Update update) {
+        User user = userObjectProvider.getObject(update);
+
+        UserRepository.Result result = repository.register(user.getId());
 
         switch (result) {
             case OK -> user.sendMessage("Вы успешно запустили бота. Теперь вы можете отслеживать ссылки."
@@ -27,4 +33,5 @@ public class StartCommand implements Command {
         }
 
     }
+
 }
