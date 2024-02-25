@@ -1,10 +1,12 @@
 package edu.java.client.stackoverflow.dto;
 
 import java.util.List;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class QuestionDto {
     List<ItemDto> items;
