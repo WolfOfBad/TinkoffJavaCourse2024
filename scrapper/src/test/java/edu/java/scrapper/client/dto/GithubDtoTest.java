@@ -56,4 +56,36 @@ public class GithubDtoTest {
         assertThat(dto.login()).isEqualTo("user");
     }
 
+    @Test
+    public void repositoryDtoBuilderTest() {
+        UserDto user = new UserDto(123, "user");
+        OffsetDateTime pushed = OffsetDateTime.parse("2024-02-25T18:46:44Z");
+        OffsetDateTime updated = OffsetDateTime.parse("2024-02-02T09:41:40Z");
+
+        RepositoryDto dto = RepositoryDto.builder()
+            .id(1)
+            .name("rep")
+            .owner(user)
+            .updatedAt(updated)
+            .pushedAt(pushed)
+            .build();
+
+        assertThat(dto.id()).isEqualTo(1);
+        assertThat(dto.name()).isEqualTo("rep");
+        assertThat(dto.owner()).isEqualTo(user);
+        assertThat(dto.updatedAt()).isEqualTo(updated);
+        assertThat(dto.pushedAt()).isEqualTo(pushed);
+    }
+
+    @Test
+    public void userDtoBuilderTest() {
+        UserDto dto = UserDto.builder()
+            .id(123)
+            .login("user")
+            .build();
+
+        assertThat(dto.id()).isEqualTo(123);
+        assertThat(dto.login()).isEqualTo("user");
+    }
+
 }

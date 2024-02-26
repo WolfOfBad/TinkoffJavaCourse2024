@@ -9,6 +9,8 @@ import edu.java.client.stackoverflow.dto.UserDto;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -70,6 +72,44 @@ public class StackoverflowDtoTest {
         QuestionDto dto = mapper.readValue(json, QuestionDto.class);
 
         assertThat(dto.items()).isNotNull();
+    }
+
+    @Test
+    public void itemDtoBuilderTest() {
+        UserDto user = new UserDto(1, "user");
+        OffsetDateTime updated = OffsetDateTime.parse("2024-02-25T18:46:44Z");
+
+        ItemDto dto = ItemDto.builder()
+            .owner(user)
+            .lastActivity(updated)
+            .questionId(123)
+            .build();
+
+        assertThat(dto.owner()).isEqualTo(user);
+        assertThat(dto.lastActivity()).isEqualTo(updated);
+        assertThat(dto.questionId()).isEqualTo(123);
+    }
+
+    @Test
+    public void questionDtoBuilderTest() {
+        List<ItemDto> items = new ArrayList<>();
+
+        QuestionDto dto = QuestionDto.builder()
+            .items(items)
+            .build();
+
+        assertThat(dto.items()).isEqualTo(items);
+    }
+
+    @Test
+    public void userDtoBuilderTest() {
+        UserDto dto = UserDto.builder()
+            .id(123)
+            .name("user")
+            .build();
+
+        assertThat(dto.name()).isEqualTo("user");
+        assertThat(dto.id()).isEqualTo(123);
     }
 
 }
