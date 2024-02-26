@@ -1,0 +1,36 @@
+{
+    "items": [
+        {
+            "tags": [
+                "vim",
+                "vi"
+            ],
+            "owner": {
+                "account_id": 1322662,
+                "reputation": 50820,
+                "user_id": 1268117,
+                "user_type": "registered",
+                "accept_rate": 50,
+                "profile_image": "https://www.gravatar.com/avatar/f67aeacce4be3f1502d887c0aa67ce5f?s=256&d=identicon&r=PG",
+                "display_name": "jclancy",
+                "link": "https://stackoverflow.com/users/1268117/jclancy"
+            },
+            "is_answered": true,
+            "view_count": 2998131,
+            "protected_date": 1495751130,
+            "accepted_answer_id": 11828573,
+            "answer_count": 13,
+            "score": 5295,
+            "last_activity_date": 1707143305,
+            "creation_date": 1344255947,
+            "last_edit_date": 1654343246,
+            "question_id": 11828270,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/11828270/how-do-i-exit-vim",
+            "title": "How do I exit Vim?"
+        }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9974
+}
