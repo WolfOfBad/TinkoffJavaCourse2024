@@ -48,12 +48,12 @@ public class GithubClientTest {
         RepositoryDto result = dtoMono.block();
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(751770237);
-        assertThat(result.getName()).isEqualTo("TinkoffJavaCourse2024");
-        assertThat(result.getPushedAt()).isEqualTo(OffsetDateTime.parse("2024-02-22T18:52:29Z"));
-        assertThat(result.getUpdatedAt()).isEqualTo(OffsetDateTime.parse("2024-02-02T09:41:40Z"));
-        assertThat(result.getOwner().getId()).isEqualTo(138949548);
-        assertThat(result.getOwner().getLogin()).isEqualTo("WolfOfBad");
+        assertThat(result.id()).isEqualTo(751770237);
+        assertThat(result.name()).isEqualTo("TinkoffJavaCourse2024");
+        assertThat(result.pushedAt()).isEqualTo(OffsetDateTime.parse("2024-02-22T18:52:29Z"));
+        assertThat(result.updatedAt()).isEqualTo(OffsetDateTime.parse("2024-02-02T09:41:40Z"));
+        assertThat(result.owner().id()).isEqualTo(138949548);
+        assertThat(result.owner().login()).isEqualTo("WolfOfBad");
     }
 
 }

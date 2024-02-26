@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import edu.java.client.github.dto.RepositoryDto;
 import edu.java.client.github.dto.UserDto;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import java.time.OffsetDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GithubDtoTest {
@@ -34,11 +34,11 @@ public class GithubDtoTest {
 
         RepositoryDto dto = mapper.readValue(json, RepositoryDto.class);
 
-        assertThat(dto.getId()).isEqualTo(123);
-        assertThat(dto.getName()).isEqualTo("rep");
-        assertThat(dto.getOwner()).isNotNull();
-        assertThat(dto.getPushedAt()).isEqualTo(OffsetDateTime.parse("2024-02-25T18:46:44Z"));
-        assertThat(dto.getUpdatedAt()).isEqualTo(OffsetDateTime.parse("2024-02-02T09:41:40Z"));
+        assertThat(dto.id()).isEqualTo(123);
+        assertThat(dto.name()).isEqualTo("rep");
+        assertThat(dto.owner()).isNotNull();
+        assertThat(dto.pushedAt()).isEqualTo(OffsetDateTime.parse("2024-02-25T18:46:44Z"));
+        assertThat(dto.updatedAt()).isEqualTo(OffsetDateTime.parse("2024-02-02T09:41:40Z"));
     }
 
     @Test
@@ -52,8 +52,8 @@ public class GithubDtoTest {
 
         UserDto dto = mapper.readValue(json, UserDto.class);
 
-        assertThat(dto.getId()).isEqualTo(123);
-        assertThat(dto.getLogin()).isEqualTo("user");
+        assertThat(dto.id()).isEqualTo(123);
+        assertThat(dto.login()).isEqualTo("user");
     }
 
 }

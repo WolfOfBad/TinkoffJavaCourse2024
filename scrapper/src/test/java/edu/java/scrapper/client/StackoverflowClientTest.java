@@ -50,13 +50,13 @@ public class StackoverflowClientTest {
         QuestionDto result = dtoMono.block();
 
         assertThat(result).isNotNull();
-        assertThat(result.getItems().getFirst().getQuestionId()).isEqualTo(11828270L);
-        assertThat(result.getItems().getFirst().getLastActivity()).isEqualTo(OffsetDateTime.ofInstant(
+        assertThat(result.items().getFirst().questionId()).isEqualTo(11828270L);
+        assertThat(result.items().getFirst().lastActivity()).isEqualTo(OffsetDateTime.ofInstant(
             Instant.ofEpochSecond(1707143305),
             ZoneOffset.UTC
         ));
-        assertThat(result.getItems().getFirst().getOwner().getId()).isEqualTo(1322662);
-        assertThat(result.getItems().getFirst().getOwner().getName()).isEqualTo("jclancy");
+        assertThat(result.items().getFirst().owner().id()).isEqualTo(1322662);
+        assertThat(result.items().getFirst().owner().name()).isEqualTo("jclancy");
     }
 
 }

@@ -6,11 +6,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import edu.java.client.stackoverflow.dto.ItemDto;
 import edu.java.client.stackoverflow.dto.QuestionDto;
 import edu.java.client.stackoverflow.dto.UserDto;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StackoverflowDtoTest {
@@ -35,9 +35,9 @@ public class StackoverflowDtoTest {
 
         ItemDto dto = mapper.readValue(json, ItemDto.class);
 
-        assertThat(dto.getQuestionId()).isEqualTo(123);
-        assertThat(dto.getOwner()).isNotNull();
-        assertThat(dto.getLastActivity()).isEqualTo(OffsetDateTime.ofInstant(
+        assertThat(dto.questionId()).isEqualTo(123);
+        assertThat(dto.owner()).isNotNull();
+        assertThat(dto.lastActivity()).isEqualTo(OffsetDateTime.ofInstant(
             Instant.ofEpochSecond(1000),
             ZoneOffset.UTC
         ));
@@ -54,8 +54,8 @@ public class StackoverflowDtoTest {
 
         UserDto dto = mapper.readValue(json, UserDto.class);
 
-        assertThat(dto.getId()).isEqualTo(123);
-        assertThat(dto.getName()).isEqualTo("user");
+        assertThat(dto.id()).isEqualTo(123);
+        assertThat(dto.name()).isEqualTo("user");
     }
 
     @Test
@@ -69,7 +69,7 @@ public class StackoverflowDtoTest {
 
         QuestionDto dto = mapper.readValue(json, QuestionDto.class);
 
-        assertThat(dto.getItems()).isNotNull();
+        assertThat(dto.items()).isNotNull();
     }
 
 }

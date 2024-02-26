@@ -1,13 +1,11 @@
 package edu.java.client.github.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class UserDto {
-    private long id;
-    private String login;
+@Builder
+public record UserDto(
+    long id,
+    String login
+) {
+
 }

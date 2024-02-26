@@ -1,16 +1,14 @@
 package edu.java.client.stackoverflow.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Builder;
 
-@Getter
-@Setter
-@NoArgsConstructor
-public class UserDto {
+@Builder
+public record UserDto(
     @JsonProperty("account_id")
-    private long id;
+    long id,
     @JsonProperty("display_name")
-    private String name;
+    String name
+) {
+
 }
