@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.Link;
-import edu.java.bot.model.link.parser.LinkParser;
+import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class UntrackCommand implements Command {
     private final ObjectProvider<User> userObjectProvider;
     private final UserRepository repository;
-    private final LinkParser parser;
+    private final LinkParserManager parser;
 
     @Override
     public void execute(Update update) {
@@ -32,6 +32,11 @@ public class UntrackCommand implements Command {
             log.error(e.getMessage());
         }
 
+    }
+
+    @Override
+    public String getCommandText() {
+        return "/untrack";
     }
 
     private String getMessage(Update update, User user) throws Exception {

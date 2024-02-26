@@ -39,4 +39,9 @@ public class ListCommand implements Command {
         }
     }
 
+    @Override
+    public String getCommandText() {
+        return "/list";
+    }
+
 }

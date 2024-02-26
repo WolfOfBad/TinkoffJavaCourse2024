@@ -4,7 +4,7 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.MessageEntity;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.model.link.parser.GithubParser;
-import edu.java.bot.model.link.parser.LinkParser;
+import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.model.link.parser.StackOverflowParser;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class LinkParserTest {
     public void parseTest(String string) {
         when(linkObjectProvider.getObject(any(String.class))).thenReturn(mock(Link.class));
 
-        LinkParser parser = LinkParser.link(
+        LinkParserManager parser = LinkParserManager.link(
             new GithubParser(linkObjectProvider),
             new StackOverflowParser(linkObjectProvider)
         );
@@ -61,7 +61,7 @@ public class LinkParserTest {
     public void failedParseTest() {
         String string = "somewebsite.com";
 
-        LinkParser parser = LinkParser.link(
+        LinkParserManager parser = LinkParserManager.link(
             new GithubParser(linkObjectProvider),
             new StackOverflowParser(linkObjectProvider)
         );
@@ -74,7 +74,7 @@ public class LinkParserTest {
     public void emptyStringParseTest() {
         String string = "";
 
-        LinkParser parser = LinkParser.link(
+        LinkParserManager parser = LinkParserManager.link(
             new GithubParser(linkObjectProvider),
             new StackOverflowParser(linkObjectProvider)
         );
@@ -93,7 +93,7 @@ public class LinkParserTest {
         when(entity.type()).thenReturn(MessageEntity.Type.bot_command);
         when(entity.length()).thenReturn(6);
 
-        LinkParser parser = LinkParser.link(
+        LinkParserManager parser = LinkParserManager.link(
             new GithubParser(linkObjectProvider),
             new StackOverflowParser(linkObjectProvider)
         );
@@ -113,7 +113,7 @@ public class LinkParserTest {
         when(entity.type()).thenReturn(MessageEntity.Type.bot_command);
         when(entity.length()).thenReturn(6);
 
-        LinkParser parser = LinkParser.link(
+        LinkParserManager parser = LinkParserManager.link(
             new GithubParser(linkObjectProvider),
             new StackOverflowParser(linkObjectProvider)
         );
@@ -129,7 +129,7 @@ public class LinkParserTest {
 
         when(message.entities()).thenReturn(new MessageEntity[] {entity});
 
-        LinkParser parser = LinkParser.link(
+        LinkParserManager parser = LinkParserManager.link(
             new GithubParser(linkObjectProvider),
             new StackOverflowParser(linkObjectProvider)
         );

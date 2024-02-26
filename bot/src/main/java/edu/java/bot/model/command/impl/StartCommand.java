@@ -34,4 +34,9 @@ public class StartCommand implements Command {
 
     }
 
+    @Override
+    public String getCommandText() {
+        return "/start";
+    }
+
 }

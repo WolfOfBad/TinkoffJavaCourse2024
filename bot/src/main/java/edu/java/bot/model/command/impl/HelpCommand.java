@@ -27,4 +27,9 @@ public class HelpCommand implements Command {
             """);
     }
 
+    @Override
+    public String getCommandText() {
+        return "/help";
+    }
+
 }

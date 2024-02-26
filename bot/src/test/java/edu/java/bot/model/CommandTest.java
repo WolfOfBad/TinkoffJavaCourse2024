@@ -11,13 +11,16 @@ import edu.java.bot.model.command.impl.TrackCommand;
 import edu.java.bot.model.command.impl.UnknownFailCommand;
 import edu.java.bot.model.command.impl.UntrackCommand;
 import edu.java.bot.model.link.Link;
-import edu.java.bot.model.link.parser.LinkParser;
+import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,6 +28,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,14 +46,14 @@ public class CommandTest {
     private Update update;
 
     @Mock
-    private LinkParser parser;
+    private LinkParserManager parser;
 
     @Mock
     private ObjectProvider<User> userObjectProvider;
 
     @BeforeEach
     public void before() {
-        when(userObjectProvider.getObject(any(Update.class))).thenReturn(user);
+        lenient().when(userObjectProvider.getObject(any(Update.class))).thenReturn(user);
     }
 
     @Test
@@ -204,7 +208,10 @@ public class CommandTest {
 
     @Test
     public void linkAlreadyExistTrackCommandTest() {
-        when(repository.addLink(eq(user.getId()), any(Link.class))).thenReturn(UserRepository.Result.LINK_ALREADY_EXIST);
+        when(repository.addLink(
+            eq(user.getId()),
+            any(Link.class)
+        )).thenReturn(UserRepository.Result.LINK_ALREADY_EXIST);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
@@ -351,6 +358,28 @@ public class CommandTest {
         verify(user).sendMessage(captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
+    }
+
+    @ParameterizedTest
+    @MethodSource("args")
+    public void getCommandTextTest(Command command, String expected) {
+        String result = command.getCommandText();
+
+        assertThat(result).isEqualTo(expected);
+    }
+
+    private static Arguments[] args() {
+        return new Arguments[] {
+            Arguments.of(new HelpCommand(null), "/help"),
+            Arguments.of(new ListCommand(null, null), "/list"),
+            Arguments.of(new ResetCommand(null, null), "/reset"),
+            Arguments.of(new StartCommand(null, null), "/start"),
+            Arguments.of(new TrackCommand(null, null, null), "/track"),
+            Arguments.of(new UntrackCommand(null, null, null), "/untrack"),
+
+            Arguments.of(new SimpleTextFailCommand(null), null),
+            Arguments.of(new UnknownFailCommand(null), null)
+        };
     }
 
 }

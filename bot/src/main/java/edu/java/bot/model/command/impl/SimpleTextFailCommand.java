@@ -19,4 +19,9 @@ public class SimpleTextFailCommand implements Command {
         user.sendMessage("Введите команду бота. Вы можете посмотреть список команд, отправив /help");
     }
 
+    @Override
+    public String getCommandText() {
+        return null;
+    }
+
 }

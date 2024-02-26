@@ -33,4 +33,9 @@ public class ResetCommand implements Command {
 
     }
 
+    @Override
+    public String getCommandText() {
+        return "/reset";
+    }
+
 }

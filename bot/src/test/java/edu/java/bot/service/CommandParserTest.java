@@ -13,7 +13,7 @@ import edu.java.bot.model.command.impl.TrackCommand;
 import edu.java.bot.model.command.impl.UnknownFailCommand;
 import edu.java.bot.model.command.impl.UntrackCommand;
 import edu.java.bot.model.link.Link;
-import edu.java.bot.model.link.parser.LinkParser;
+import edu.java.bot.model.link.parser.LinkParserManager;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ class CommandParserTest {
     private MessageEntity messageEntity;
 
     @Mock
-    private LinkParser linkParser;
+    private LinkParserManager linkParser;
 
     private final Map<String, Command> commandMap = Map.ofEntries(
         Map.entry("/start", mock(StartCommand.class)),

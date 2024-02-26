@@ -12,12 +12,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public abstract class LinkParser {
-    private LinkParser nextParse;
+public abstract class LinkParserManager {
+    private LinkParserManager nextParse;
 
-    public static LinkParser link(LinkParser first, LinkParser... chain) {
-        LinkParser head = first;
-        for (LinkParser next : chain) {
+    public static LinkParserManager link(LinkParserManager first, LinkParserManager... chain) {
+        LinkParserManager head = first;
+        for (LinkParserManager next : chain) {
             head.nextParse = next;
             head = next;
         }

@@ -19,4 +19,9 @@ public class UnknownFailCommand implements Command {
         user.sendMessage("Неизвестная команда. Чтобы посмотреть список команд, используйте /help");
     }
 
+    @Override
+    public String getCommandText() {
+        return null;
+    }
+
 }

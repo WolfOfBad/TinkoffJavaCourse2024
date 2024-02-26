@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class StackOverflowParser extends LinkParser {
+public class StackOverflowParser extends LinkParserManager {
     private final ObjectProvider<Link> linkObjectProvider;
     private static final Pattern PATTERN = Pattern.compile("(https://)?stackoverflow\\.com/.*");
 
