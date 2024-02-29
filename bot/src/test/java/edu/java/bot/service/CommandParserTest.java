@@ -14,6 +14,7 @@ import edu.java.bot.model.command.impl.UnknownFailCommand;
 import edu.java.bot.model.command.impl.UntrackCommand;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
+import java.net.URI;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +67,7 @@ class CommandParserTest {
         )).thenReturn(mock(Link.class));
 
         lenient().when(linkParser.parse(any(String.class)))
-            .thenReturn(Optional.of(new Link("uri")));
+            .thenReturn(Optional.of(new Link(URI.create("uri"))));
     }
 
     @ParameterizedTest
@@ -113,3 +114,4 @@ class CommandParserTest {
     }
 
 }
+

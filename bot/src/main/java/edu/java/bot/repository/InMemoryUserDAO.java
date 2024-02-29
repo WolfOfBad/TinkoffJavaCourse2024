@@ -1,5 +1,6 @@
 package edu.java.bot.repository;
 
+import edu.java.bot.model.User;
 import edu.java.bot.model.link.Link;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,60 +16,60 @@ public class InMemoryUserDAO implements UserRepository {
     private final Map<Long, List<Link>> storage = new HashMap<>();
 
     @Override
-    public Result register(long id) {
-        if (storage.containsKey(id)) {
+    public Result register(User user) {
+        if (storage.containsKey(user.id())) {
             return Result.USER_ALREADY_EXIST;
         }
 
-        storage.put(id, new ArrayList<>());
+        storage.put(user.id(), new ArrayList<>());
         return Result.OK;
     }
 
     @Override
-    public Result addLink(long id, Link link) {
-        if (!storage.containsKey(id)) {
+    public Result addLink(User user, Link link) {
+        if (!storage.containsKey(user.id())) {
             return Result.USER_NOT_EXIST;
         }
 
-        if (storage.get(id).contains(link)) {
+        if (storage.get(user.id()).contains(link)) {
             return Result.LINK_ALREADY_EXIST;
         }
 
-        storage.get(id).add(link);
+        storage.get(user.id()).add(link);
         return Result.OK;
     }
 
     @Override
-    public Result deleteLink(long id, Link link) {
-        if (!storage.containsKey(id)) {
+    public Result deleteLink(User user, Link link) {
+        if (!storage.containsKey(user.id())) {
             return Result.USER_NOT_EXIST;
         }
 
-        if (!storage.get(id).contains(link)) {
+        if (!storage.get(user.id()).contains(link)) {
             return Result.LINK_NOT_EXIST;
         }
 
-        storage.get(id).remove(link);
+        storage.get(user.id()).remove(link);
         return Result.OK;
     }
 
     @Override
-    public Result deleteUser(long id) {
-        if (!storage.containsKey(id)) {
+    public Result deleteUser(User user) {
+        if (!storage.containsKey(user.id())) {
             return Result.USER_NOT_EXIST;
         }
 
-        storage.remove(id);
+        storage.remove(user.id());
         return Result.OK;
     }
 
     @Override
-    public Optional<List<Link>> getLinks(long id) {
-        if (!storage.containsKey(id)) {
+    public Optional<List<Link>> getLinks(User user) {
+        if (!storage.containsKey(user.id())) {
             return Optional.empty();
         }
 
-        return Optional.of(storage.get(id));
+        return Optional.of(storage.get(user.id()));
     }
 
 }

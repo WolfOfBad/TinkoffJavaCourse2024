@@ -1,11 +1,9 @@
 package edu.java.bot.configuration;
 
-import com.pengrad.telegrambot.TelegramBot;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.parser.GithubParser;
 import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.model.link.parser.StackOverflowParser;
-import edu.java.bot.service.BotService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +35,6 @@ public class ApplicationConfiguration {
         }
 
         return commandMap;
-    }
-
-    @Bean
-    public TelegramBot telegramBot(BotService service) {
-        return service.getBot();
     }
 
 }
