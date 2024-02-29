@@ -6,29 +6,29 @@ import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
+import edu.java.bot.service.BotService;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class TrackCommand implements Command {
-    private final ObjectProvider<User> userObjectProvider;
     private final UserRepository repository;
     private final LinkParserManager parser;
+    private final BotService botService;
     private final Logger logger = LogManager.getLogger();
 
     @Override
     public void execute(Update update) {
-        User user = userObjectProvider.getObject(update);
+        User user = User.parse(update);
 
         try {
             String message = getMessage(update, user);
 
-            user.sendMessage(message);
+            botService.sendMessage(user, message);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
@@ -52,7 +52,7 @@ public class TrackCommand implements Command {
             return "Данный ресурс, к сожалению, пока не поддерживается";
         }
 
-        UserRepository.Result result = repository.addLink(user.getId(), link.get());
+        UserRepository.Result result = repository.addLink(user, link.get());
 
         return switch (result) {
             case OK -> "Вы начали отслеживание сайта. "

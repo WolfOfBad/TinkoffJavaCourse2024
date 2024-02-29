@@ -14,10 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.ObjectProvider;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,17 +28,12 @@ public class LinkParserTest {
     @Mock
     private MessageEntity entity;
 
-    @Mock
-    private ObjectProvider<Link> linkObjectProvider;
-
     @ParameterizedTest
     @MethodSource("args")
     public void parseTest(String string) {
-        when(linkObjectProvider.getObject(any(String.class))).thenReturn(mock(Link.class));
-
         LinkParserManager parser = LinkParserManager.link(
-            new GithubParser(linkObjectProvider),
-            new StackOverflowParser(linkObjectProvider)
+            new GithubParser(),
+            new StackOverflowParser()
         );
         Optional<Link> result = parser.parse(string);
 
@@ -62,8 +54,8 @@ public class LinkParserTest {
         String string = "somewebsite.com";
 
         LinkParserManager parser = LinkParserManager.link(
-            new GithubParser(linkObjectProvider),
-            new StackOverflowParser(linkObjectProvider)
+            new GithubParser(),
+            new StackOverflowParser()
         );
         Optional<Link> result = parser.parse(string);
 
@@ -75,8 +67,8 @@ public class LinkParserTest {
         String string = "";
 
         LinkParserManager parser = LinkParserManager.link(
-            new GithubParser(linkObjectProvider),
-            new StackOverflowParser(linkObjectProvider)
+            new GithubParser(),
+            new StackOverflowParser()
         );
         Optional<Link> result = parser.parse(string);
 
@@ -94,8 +86,8 @@ public class LinkParserTest {
         when(entity.length()).thenReturn(6);
 
         LinkParserManager parser = LinkParserManager.link(
-            new GithubParser(linkObjectProvider),
-            new StackOverflowParser(linkObjectProvider)
+            new GithubParser(),
+            new StackOverflowParser()
         );
 
         Optional<String> uri = parser.getUri(update);
@@ -114,8 +106,8 @@ public class LinkParserTest {
         when(entity.length()).thenReturn(6);
 
         LinkParserManager parser = LinkParserManager.link(
-            new GithubParser(linkObjectProvider),
-            new StackOverflowParser(linkObjectProvider)
+            new GithubParser(),
+            new StackOverflowParser()
         );
 
         Optional<String> uri = parser.getUri(update);
@@ -130,8 +122,8 @@ public class LinkParserTest {
         when(message.entities()).thenReturn(new MessageEntity[] {entity});
 
         LinkParserManager parser = LinkParserManager.link(
-            new GithubParser(linkObjectProvider),
-            new StackOverflowParser(linkObjectProvider)
+            new GithubParser(),
+            new StackOverflowParser()
         );
 
         Optional<String> uri = parser.getUri(update);

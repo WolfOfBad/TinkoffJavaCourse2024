@@ -4,25 +4,26 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.ParseMode;
+import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
-import edu.java.bot.configuration.ApplicationConfigProperties;
+import com.pengrad.telegrambot.response.SendResponse;
+import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import java.util.List;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class BotService implements UpdatesListener, AutoCloseable {
     private final CommandParser parser;
-
-    @Getter
+    private final Logger logger = LogManager.getLogger();
     private final TelegramBot bot;
 
-    public BotService(ApplicationConfigProperties configProperties, CommandParser parser) {
-        bot = new TelegramBot(configProperties.telegramToken());
+    public BotService(TelegramBot bot, CommandParser parser) {
+        this.bot = bot;
         this.parser = parser;
 
         setCommandsMenu();
@@ -50,9 +51,9 @@ public class BotService implements UpdatesListener, AutoCloseable {
         BaseResponse response = bot.execute(request);
 
         if (response.isOk()) {
-            log.info("Commands menu successfully set");
+            logger.info("Commands menu successfully set");
         } else {
-            log.info("Commands menu not set:" + response.errorCode());
+            logger.info("Commands menu not set:" + response.errorCode());
         }
     }
 
@@ -69,6 +70,21 @@ public class BotService implements UpdatesListener, AutoCloseable {
         }
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    public void sendMessage(User user, String message) {
+        SendMessage request = new SendMessage(user.id(), message)
+            .parseMode(ParseMode.HTML);
+
+        while (!sendRequest(request)) {
+            sendRequest(request);
+        }
+    }
+
+    private boolean sendRequest(SendMessage request) {
+        SendResponse response = bot.execute(request);
+
+        return response.isOk();
     }
 
     @Override

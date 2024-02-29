@@ -1,5 +1,6 @@
 package edu.java.bot.model;
 
+import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.command.impl.HelpCommand;
@@ -13,6 +14,8 @@ import edu.java.bot.model.command.impl.UntrackCommand;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
+import edu.java.bot.service.BotService;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,10 +27,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.ObjectProvider;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,10 +36,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandTest {
-
-    @Mock
-    private User user;
-
     @Mock
     private UserRepository repository;
 
@@ -46,50 +43,57 @@ public class CommandTest {
     private Update update;
 
     @Mock
+    private Message message;
+
+    @Mock
+    private com.pengrad.telegrambot.model.User user;
+
+    @Mock
     private LinkParserManager parser;
 
     @Mock
-    private ObjectProvider<User> userObjectProvider;
+    private BotService botService;
 
     @BeforeEach
     public void before() {
-        lenient().when(userObjectProvider.getObject(any(Update.class))).thenReturn(user);
+        lenient().when(update.message()).thenReturn(message);
+        lenient().when(message.from()).thenReturn(user);
+        lenient().when(user.id()).thenReturn(1L);
     }
 
     @Test
     public void helpCommandTest() {
-        Command command = new HelpCommand(userObjectProvider);
+        Command command = new HelpCommand(botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
     }
 
     @Test
     public void listCommandTest() {
-        when(repository.getLinks(user.getId())).thenReturn(Optional.of(List.of(new Link("link"))));
+        when(repository.getLinks(any(User.class))).thenReturn(Optional.of(List.of(new Link(URI.create("link")))));
 
-        Command command = new ListCommand(userObjectProvider, repository);
+        Command command = new ListCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
-        assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo("Список отслеживаемых ссылок:\nlink\n");
     }
 
     @Test
     public void userNotExistListCommandTest() {
-        when(repository.getLinks(user.getId())).thenReturn(Optional.empty());
+        when(repository.getLinks(any(User.class))).thenReturn(Optional.empty());
 
-        Command command = new ListCommand(userObjectProvider, repository);
+        Command command = new ListCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -98,13 +102,13 @@ public class CommandTest {
 
     @Test
     public void noLinksListCommandTest() {
-        when(repository.getLinks(user.getId())).thenReturn(Optional.of(List.of()));
+        when(repository.getLinks(any(User.class))).thenReturn(Optional.of(List.of()));
 
-        Command command = new ListCommand(userObjectProvider, repository);
+        Command command = new ListCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo("Сейчас вы не отслеживаете никаких ссылок");
@@ -112,13 +116,13 @@ public class CommandTest {
 
     @Test
     public void resetCommandTest() {
-        when(repository.deleteUser(user.getId())).thenReturn(UserRepository.Result.OK);
+        when(repository.deleteUser(any(User.class))).thenReturn(UserRepository.Result.OK);
 
-        Command command = new ResetCommand(userObjectProvider, repository);
+        Command command = new ResetCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -127,13 +131,13 @@ public class CommandTest {
 
     @Test
     public void userNotExistResetCommandTest() {
-        when(repository.deleteUser(user.getId())).thenReturn(UserRepository.Result.USER_NOT_EXIST);
+        when(repository.deleteUser(any(User.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
 
-        Command command = new ResetCommand(userObjectProvider, repository);
+        Command command = new ResetCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -142,13 +146,13 @@ public class CommandTest {
 
     @Test
     public void startCommandTest() {
-        when(repository.register(user.getId())).thenReturn(UserRepository.Result.OK);
+        when(repository.register(any(User.class))).thenReturn(UserRepository.Result.OK);
 
-        Command command = new StartCommand(userObjectProvider, repository);
+        Command command = new StartCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -159,13 +163,13 @@ public class CommandTest {
 
     @Test
     public void userAlreadyExistStartCommandTest() {
-        when(repository.register(user.getId())).thenReturn(UserRepository.Result.USER_ALREADY_EXIST);
+        when(repository.register(any(User.class))).thenReturn(UserRepository.Result.USER_ALREADY_EXIST);
 
-        Command command = new StartCommand(userObjectProvider, repository);
+        Command command = new StartCommand(repository, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -174,15 +178,15 @@ public class CommandTest {
 
     @Test
     public void trackCommandTest() {
-        when(repository.addLink(eq(user.getId()), any(Link.class))).thenReturn(UserRepository.Result.OK);
+        when(repository.addLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.OK);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new TrackCommand(userObjectProvider, repository, parser);
+        Command command = new TrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -191,15 +195,15 @@ public class CommandTest {
 
     @Test
     public void userNotExistTrackCommandTest() {
-        when(repository.addLink(eq(user.getId()), any(Link.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
+        when(repository.addLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new TrackCommand(userObjectProvider, repository, parser);
+        Command command = new TrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -208,18 +212,15 @@ public class CommandTest {
 
     @Test
     public void linkAlreadyExistTrackCommandTest() {
-        when(repository.addLink(
-            eq(user.getId()),
-            any(Link.class)
-        )).thenReturn(UserRepository.Result.LINK_ALREADY_EXIST);
+        when(repository.addLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.LINK_ALREADY_EXIST);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new TrackCommand(userObjectProvider, repository, parser);
+        Command command = new TrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -230,11 +231,11 @@ public class CommandTest {
     public void noLinkTrackCommandTest() {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.empty());
 
-        Command command = new TrackCommand(userObjectProvider, repository, parser);
+        Command command = new TrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -246,11 +247,11 @@ public class CommandTest {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
         when(parser.parse(any(String.class))).thenReturn(Optional.empty());
 
-        Command command = new TrackCommand(userObjectProvider, repository, parser);
+        Command command = new TrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -259,15 +260,15 @@ public class CommandTest {
 
     @Test
     public void untrackCommandTest() {
-        when(repository.deleteLink(eq(user.getId()), any(Link.class))).thenReturn(UserRepository.Result.OK);
+        when(repository.deleteLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.OK);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new UntrackCommand(userObjectProvider, repository, parser);
+        Command command = new UntrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo("Вы прекратили отслеживание ссылки");
@@ -275,15 +276,15 @@ public class CommandTest {
 
     @Test
     public void userNotExistUntrackCommandTest() {
-        when(repository.deleteLink(eq(user.getId()), any(Link.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
+        when(repository.deleteLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new UntrackCommand(userObjectProvider, repository, parser);
+        Command command = new UntrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -292,15 +293,15 @@ public class CommandTest {
 
     @Test
     public void linkNotExistUntrackCommandTest() {
-        when(repository.deleteLink(eq(user.getId()), any(Link.class))).thenReturn(UserRepository.Result.LINK_NOT_EXIST);
+        when(repository.deleteLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.LINK_NOT_EXIST);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new UntrackCommand(userObjectProvider, repository, parser);
+        Command command = new UntrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -311,11 +312,11 @@ public class CommandTest {
     public void noLinkUntrackCommandTest() {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.empty());
 
-        Command command = new UntrackCommand(userObjectProvider, repository, parser);
+        Command command = new UntrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -327,11 +328,11 @@ public class CommandTest {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
         when(parser.parse(any(String.class))).thenReturn(Optional.empty());
 
-        Command command = new UntrackCommand(userObjectProvider, repository, parser);
+        Command command = new UntrackCommand(repository, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
@@ -340,22 +341,22 @@ public class CommandTest {
 
     @Test
     public void simpleTextFailCommandTest() {
-        Command command = new SimpleTextFailCommand(userObjectProvider);
+        Command command = new SimpleTextFailCommand(botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
     }
 
     @Test
     public void unknownFailCommand() {
-        Command command = new UnknownFailCommand(userObjectProvider);
+        Command command = new UnknownFailCommand(botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(user).sendMessage(captor.capture());
+        verify(botService).sendMessage(any(User.class), captor.capture());
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
     }
