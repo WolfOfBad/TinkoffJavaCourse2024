@@ -8,17 +8,18 @@ import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class UntrackCommand implements Command {
     private final ObjectProvider<User> userObjectProvider;
     private final UserRepository repository;
     private final LinkParserManager parser;
+    private final Logger logger = LogManager.getLogger();
 
     @Override
     public void execute(Update update) {
@@ -29,7 +30,7 @@ public class UntrackCommand implements Command {
 
             user.sendMessage(message);
         } catch (Exception e) {
-            log.error(e.getMessage());
+            logger.error(e.getMessage());
         }
 
     }
