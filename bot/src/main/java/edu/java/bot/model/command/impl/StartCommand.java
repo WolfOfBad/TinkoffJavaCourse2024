@@ -5,16 +5,17 @@ import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-@Slf4j
 public class StartCommand implements Command {
     private final ObjectProvider<User> userObjectProvider;
     private final UserRepository repository;
+    private final Logger logger = LogManager.getLogger();
 
     @Override
     public void execute(Update update) {
@@ -29,7 +30,7 @@ public class StartCommand implements Command {
             case USER_ALREADY_EXIST -> user.sendMessage("Вы уже зарегестрированы в боте. "
                 + "Чтобы сбросить ссылки отправьте команду /reset");
 
-            default -> log.error("Unexpected switch result. Class: " + this.getClass() + " Result: " + result);
+            default -> logger.error("Unexpected switch result. Class: " + this.getClass() + " Result: " + result);
         }
 
     }
