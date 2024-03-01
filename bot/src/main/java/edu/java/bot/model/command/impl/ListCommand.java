@@ -5,7 +5,7 @@ import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.repository.UserRepository;
-import edu.java.bot.service.BotService;
+import edu.java.bot.service.SendMessageService;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class ListCommand implements Command {
     private final UserRepository repository;
-    private final BotService botService;
+    private final SendMessageService sendMessageService;
 
     @Override
     public void execute(Update update) {
@@ -24,12 +24,12 @@ public class ListCommand implements Command {
         Optional<List<Link>> links = repository.getLinks(user);
 
         if (links.isEmpty()) {
-            botService.sendMessage(
+            sendMessageService.sendMessage(
                 user,
                 "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу с ботом"
             );
         } else if (links.get().isEmpty()) {
-            botService.sendMessage(user, "Сейчас вы не отслеживаете никаких ссылок");
+            sendMessageService.sendMessage(user, "Сейчас вы не отслеживаете никаких ссылок");
         } else {
             StringBuilder sb = new StringBuilder();
             sb.append("Список отслеживаемых ссылок:\n");
@@ -38,7 +38,7 @@ public class ListCommand implements Command {
                 sb.append(link.uri()).append("\n");
             }
 
-            botService.sendMessage(user, sb.toString());
+            sendMessageService.sendMessage(user, sb.toString());
         }
     }
 
