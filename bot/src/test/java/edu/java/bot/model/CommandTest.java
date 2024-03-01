@@ -14,7 +14,7 @@ import edu.java.bot.model.command.impl.UntrackCommand;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
-import edu.java.bot.service.BotService;
+import edu.java.bot.service.SendMessageService;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +52,7 @@ public class CommandTest {
     private LinkParserManager parser;
 
     @Mock
-    private BotService botService;
+    private SendMessageService botService;
 
     @BeforeEach
     public void before() {

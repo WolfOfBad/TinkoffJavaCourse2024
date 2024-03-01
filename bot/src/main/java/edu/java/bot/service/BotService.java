@@ -4,12 +4,8 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
-import com.pengrad.telegrambot.response.SendResponse;
-import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -70,21 +66,6 @@ public class BotService implements UpdatesListener, AutoCloseable {
         }
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
-    }
-
-    public void sendMessage(User user, String message) {
-        SendMessage request = new SendMessage(user.id(), message)
-            .parseMode(ParseMode.HTML);
-
-        while (!sendRequest(request)) {
-            sendRequest(request);
-        }
-    }
-
-    private boolean sendRequest(SendMessage request) {
-        SendResponse response = bot.execute(request);
-
-        return response.isOk();
     }
 
     @Override

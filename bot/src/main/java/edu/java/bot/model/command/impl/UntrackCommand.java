@@ -6,7 +6,7 @@ import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
 import edu.java.bot.repository.UserRepository;
-import edu.java.bot.service.BotService;
+import edu.java.bot.service.SendMessageService;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class UntrackCommand implements Command {
     private final UserRepository repository;
     private final LinkParserManager parser;
-    private final BotService botService;
+    private final SendMessageService sendMessageService;
     private final Logger logger = LogManager.getLogger();
 
     @Override
@@ -28,7 +28,7 @@ public class UntrackCommand implements Command {
         try {
             String message = getMessage(update, user);
 
-            botService.sendMessage(user, message);
+            sendMessageService.sendMessage(user, message);
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
