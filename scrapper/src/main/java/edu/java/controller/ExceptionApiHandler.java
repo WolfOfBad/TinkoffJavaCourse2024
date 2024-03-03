@@ -1,7 +1,7 @@
-package edu.java.bot.controller;
+package edu.java.controller;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import edu.java.bot.controller.dto.response.ApiErrorResponse;
+import edu.java.controller.dto.response.ApiErrorResponse;
 import java.util.Arrays;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

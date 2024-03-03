@@ -24,7 +24,11 @@ public record ApplicationConfigProperties(
     @NotNull
     @Name("stackoverflow-client")
     @DefaultValue("https://api.stackexchange.com")
-    ClientProperties stackoverflowProperties
+    ClientProperties stackoverflowProperties,
+
+    @NotNull
+    @Name("bot-client")
+    ClientProperties botProperties
 ) {
     @Bean
     public Duration intervalDelay() {

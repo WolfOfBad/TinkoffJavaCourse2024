@@ -10,7 +10,10 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public record ApplicationConfigProperties(
     @NotEmpty
-    String telegramToken
+    String telegramToken,
+
+    @NotEmpty
+    String scrapperUrl
 ) {
     @Bean
     public TelegramBot telegramBot() {

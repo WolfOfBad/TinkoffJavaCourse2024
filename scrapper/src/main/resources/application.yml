@@ -10,6 +10,9 @@ app:
   stackoverflow-client:
     base-url: https://api.stackexchange.com
 
+  bot-client:
+    base-url: http://localhost:8090
+
 spring:
   application:
     name: scrapper

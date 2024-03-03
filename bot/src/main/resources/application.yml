@@ -1,6 +1,7 @@
 app:
   # Add your token in environment variables
   telegram-token: ${APP_TELEGRAM_TOKEN}
+  scrapper-url: http://localhost:8080
 
 spring:
   application:
