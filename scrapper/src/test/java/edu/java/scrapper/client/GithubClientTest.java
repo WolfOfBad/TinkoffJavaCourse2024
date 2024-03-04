@@ -1,7 +1,7 @@
 package edu.java.scrapper.client;
 
-import edu.java.client.github.GithubClient;
-import edu.java.client.github.dto.RepositoryDto;
+import edu.java.scrapper.client.github.GithubClient;
+import edu.java.scrapper.client.github.dto.RepositoryDto;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
