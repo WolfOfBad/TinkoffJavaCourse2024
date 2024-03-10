@@ -1,7 +1,7 @@
 package edu.java.scrapper.client;
 
-import edu.java.client.stackoverflow.StackoverflowClient;
-import edu.java.client.stackoverflow.dto.QuestionDto;
+import edu.java.scrapper.client.stackoverflow.StackoverflowClient;
+import edu.java.scrapper.client.stackoverflow.dto.QuestionDto;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
