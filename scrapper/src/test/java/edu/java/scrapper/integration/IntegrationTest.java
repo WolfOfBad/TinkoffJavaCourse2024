@@ -49,7 +49,7 @@ public abstract class IntegrationTest {
             postgresDatabase.setConnection(new JdbcConnection(connection));
 
             Liquibase liquibase = new Liquibase(
-                "master.xml",
+                "master.yml",
                 new DirectoryResourceAccessor(masterMigration),
                 postgresDatabase
             );
