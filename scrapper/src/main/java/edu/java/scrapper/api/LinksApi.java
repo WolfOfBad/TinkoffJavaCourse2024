@@ -119,6 +119,8 @@ public interface LinksApi {
      * @param addLinkRequest (required)
      * @return Ссылка успешно добавлена (status code 200)
      *     or Некорректные параметры запроса (status code 400)
+     *     or Чат не зарегистрирован (status code 401)
+     *     or Чат уже подписан на отслеживание ссылки (status code 409)
      */
     @Operation(
         operationId = "linksPost",
@@ -128,6 +130,12 @@ public interface LinksApi {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = LinkResponse.class))
             }),
             @ApiResponse(responseCode = "400", description = "Некорректные параметры запроса", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "401", description = "Чат не зарегистрирован", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
+            }),
+            @ApiResponse(responseCode = "409", description = "Чат уже подписан на отслеживание ссылки", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
             })
         }

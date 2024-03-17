@@ -25,6 +25,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Чат уже зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
     delete:
       summary: Удалить чат
       parameters:
@@ -43,7 +49,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
-        '404':
+        '401':
           description: Чат не существует
           content:
             application/json:
@@ -96,6 +102,18 @@ paths:
                 $ref: '#/components/schemas/LinkResponse'
         '400':
           description: Некорректные параметры запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Чат не зарегистрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
+        '409':
+          description: Чат уже подписан на отслеживание ссылки
           content:
             application/json:
               schema:

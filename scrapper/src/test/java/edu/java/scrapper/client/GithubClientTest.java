@@ -8,7 +8,6 @@ import java.time.OffsetDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import reactor.core.publisher.Mono;
 import wiremock.com.google.common.io.Resources;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -35,8 +34,7 @@ public class GithubClientTest {
                 .withBody(repositoryBody)));
 
         GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
-        Mono<RepositoryDto> dtoMono = client.getRepository("user", "rep");
-        RepositoryDto result = dtoMono.block();
+        RepositoryDto result = client.getRepository("user", "rep");
 
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo(751770237);

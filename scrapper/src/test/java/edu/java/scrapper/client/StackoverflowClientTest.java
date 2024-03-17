@@ -10,7 +10,6 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import reactor.core.publisher.Mono;
 import wiremock.com.google.common.io.Resources;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -37,8 +36,7 @@ public class StackoverflowClientTest {
                 .withBody(repositoryBody)));
 
         StackoverflowClient client = new StackoverflowClient("http://localhost:" + WireMockServerExtension.getPort());
-        Mono<QuestionDto> dtoMono = client.getQuestion(11828270L);
-        QuestionDto result = dtoMono.block();
+        QuestionDto result = client.getQuestion(11828270L);
 
         assertThat(result).isNotNull();
         assertThat(result.items().getFirst().questionId()).isEqualTo(11828270L);

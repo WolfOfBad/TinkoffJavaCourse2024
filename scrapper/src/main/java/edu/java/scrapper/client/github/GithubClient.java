@@ -4,7 +4,6 @@ import edu.java.scrapper.client.github.dto.RepositoryDto;
 import java.util.function.Consumer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 public class GithubClient {
     private final WebClient webClient;
@@ -13,11 +12,12 @@ public class GithubClient {
         webClient = WebClient.builder().baseUrl(baseUrl).build();
     }
 
-    public Mono<RepositoryDto> getRepository(String user, String repository) {
+    public RepositoryDto getRepository(String user, String repository) {
         return webClient.get().uri("/repos/{user}/{repository}", user, repository)
             .headers(defaultHeaders)
             .retrieve()
-            .bodyToMono(RepositoryDto.class);
+            .bodyToMono(RepositoryDto.class)
+            .block();
     }
 
     private final Consumer<HttpHeaders> defaultHeaders = httpHeaders -> {
