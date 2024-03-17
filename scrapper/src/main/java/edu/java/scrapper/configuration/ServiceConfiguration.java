@@ -25,7 +25,7 @@ public class ServiceConfiguration {
         LinkUpdater updater
     ) {
         return switch (accessType) {
-            case JDBC -> new DefaultLinkService(repository, updater);
+            case JDBC, JOOQ -> new DefaultLinkService(repository, updater);
         };
     }
 
@@ -38,7 +38,7 @@ public class ServiceConfiguration {
         UpdateNotifier notifier
     ) {
         return switch (accessType) {
-            case JDBC -> new DefaultLinkUpdater(checker, repository, notifier);
+            case JDBC, JOOQ -> new DefaultLinkUpdater(checker, repository, notifier);
         };
     }
 
@@ -50,7 +50,7 @@ public class ServiceConfiguration {
         LinkRepository linkRepository
     ) {
         return switch (accessType) {
-            case JDBC -> new DefaultTgChatService(chatRepository, linkRepository);
+            case JDBC, JOOQ -> new DefaultTgChatService(chatRepository, linkRepository);
         };
     }
 }
