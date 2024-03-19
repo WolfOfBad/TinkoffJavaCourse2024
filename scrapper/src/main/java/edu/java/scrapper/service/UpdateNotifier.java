@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 public class UpdateNotifier {
     private BotClient botClient;
 
-    public void notifyUsers(Link link, List<TelegramChat> chatList) {
+    public void notifyUsers(Link link, List<TelegramChat> chatList, String description) {
         botClient.sendUpdate(
             link.id(),
             link.uri().toString(),
-            "todo",
+            description,
             chatList.stream().map(TelegramChat::id).toList()
         );
     }

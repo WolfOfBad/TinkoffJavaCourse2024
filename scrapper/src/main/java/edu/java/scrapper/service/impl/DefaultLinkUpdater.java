@@ -27,7 +27,11 @@ public class DefaultLinkUpdater implements LinkUpdater {
                 .lastUpdate(lastUpdate)
                 .build());
 
-            updateNotifier.notifyUsers(link, linkRepository.getUsers(link.uri()));
+            updateNotifier.notifyUsers(
+                link,
+                linkRepository.getUsers(link.uri()),
+                linkCheckerManager.getLastEvent(link.uri().toString()).getMessage()
+            );
         }
     }
 
