@@ -17,7 +17,7 @@ public record EventDTO(
     PayloadDTO payload
 ) {
     public String getMessage() {
-        return switch (getType()) {
+        return switch (EventType.getEventType(type)) {
             case PUSH -> "новый коммит в репозитории";
             case PULL_REQUEST -> pullRequestMessage();
             case PULL_REQUEST_REVIEW_COMMENT -> "новый коментарий к коду в ПР";
@@ -26,22 +26,12 @@ public record EventDTO(
         };
     }
 
-    private String pullRequestMessage() {
-        return switch (payload.getAction()) {
-            case OPENED -> "новый ПР в репозитории";
-            case CLOSED -> "один из ПР в репозитории закрыт";
-            case UNKNOWN -> "замечено обновление в ПР";
-        };
+    public EventType getType() {
+        return EventType.getEventType(type);
     }
 
-    public EventType getType() {
-        return switch (type) {
-            case "PullRequestEvent" -> EventType.PULL_REQUEST;
-            case "IssueCommentEvent" -> EventType.ISSUE_COMMENT;
-            case "PushEvent" -> EventType.PUSH;
-            case "PullRequestReviewCommentEvent" -> EventType.PULL_REQUEST_REVIEW_COMMENT;
-            default -> EventType.UNKNOWN;
-        };
+    private String pullRequestMessage() {
+        return payload.getAction().getActionMessage();
     }
 
     @SuppressWarnings("MultipleStringLiterals")
