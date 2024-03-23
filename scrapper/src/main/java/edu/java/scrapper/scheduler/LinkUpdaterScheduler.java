@@ -21,13 +21,13 @@ public class LinkUpdaterScheduler {
         this.oldLinkTime = scheduler.oldLinkTime();
     }
 
-    @Scheduled(fixedDelayString = "#{scheduler.interval()}")
+    @Scheduled(fixedDelayString = "#{scheduler.interval}")
     public void update() {
         log.info("Updating old links info...");
         linkUpdater.updateOldLinks(OffsetDateTime.now().minus(oldLinkTime));
     }
 
-    @Scheduled(fixedDelayString = "#{@scheduler.forceCheckDelay()}")
+    @Scheduled(fixedDelayString = "#{scheduler.forceCheckDelay()}")
     public void updateAllLinks() {
         log.info("Updating all info...");
         linkUpdater.updateAll();

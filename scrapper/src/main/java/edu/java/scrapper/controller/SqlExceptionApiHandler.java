@@ -2,7 +2,6 @@ package edu.java.scrapper.controller;
 
 import edu.java.scrapper.controller.dto.response.ApiErrorResponse;
 import edu.java.scrapper.exception.AlreadySubscribedException;
-import edu.java.scrapper.exception.ChatNotRegisteredException;
 import edu.java.scrapper.exception.NoSuchChatException;
 import edu.java.scrapper.exception.NoSuchLinkException;
 import edu.java.scrapper.exception.UserAlreadyRegisteredException;
@@ -36,19 +35,6 @@ public class SqlExceptionApiHandler {
             .status(HttpStatus.UNAUTHORIZED)
             .body(new ApiErrorResponse(
                 "No such chat exception",
-                HttpStatus.UNAUTHORIZED.toString(),
-                exception.getClass().toString(),
-                exception.getMessage(),
-                Arrays.stream(exception.getStackTrace()).map(StackTraceElement::toString).toList()
-            ));
-    }
-
-    @ExceptionHandler(ChatNotRegisteredException.class)
-    public ResponseEntity<ApiErrorResponse> chatNotRegistered(ChatNotRegisteredException exception) {
-        return ResponseEntity
-            .status(HttpStatus.UNAUTHORIZED)
-            .body(new ApiErrorResponse(
-                "Chat not registered exception",
                 HttpStatus.UNAUTHORIZED.toString(),
                 exception.getClass().toString(),
                 exception.getMessage(),

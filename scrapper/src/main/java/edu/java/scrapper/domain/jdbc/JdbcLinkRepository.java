@@ -36,10 +36,11 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     public List<Link> getAllById(long tgChatId) {
-        String sql = "select link.id, uri, last_update from link "
-            + "join chat_link on (link.id = chat_link.link_id) "
-            + "join chat on (chat.id = chat_link.chat_id) "
-            + "where tg_chat_id = :tg_chat_id";
+        String sql = """
+            select link.id, uri, last_update from link
+            join chat_link on (link.id = chat_link.link_id)
+            join chat on (chat.id = chat_link.chat_id) where tg_chat_id = :tg_chat_id
+            """;
 
         return jdbcClient.sql(sql)
             .param("tg_chat_id", tgChatId)
@@ -71,8 +72,10 @@ public class JdbcLinkRepository implements LinkRepository {
     public Link addAndSubscribe(URI uri, long tgChatId) {
         Link link = add(uri);
 
-        String subscribeSql = "insert into chat_link (chat_id, link_id) values "
-            + "((select id from chat where tg_chat_id = :tg_chat_id), :link_id)";
+        String subscribeSql = """
+            insert into chat_link (chat_id, link_id) values
+            ((select id from chat where tg_chat_id = :tg_chat_id), :link_id)
+            """;
 
         jdbcClient.sql(subscribeSql)
             .param("tg_chat_id", tgChatId)
@@ -105,9 +108,11 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     public Link subscribe(URI uri, long tgChatId) {
-        String sql = "insert into chat_link (chat_id, link_id) values "
-            + "((select id from chat where tg_chat_id = :tg_chat_id), "
-            + "(select id from link where uri = :uri))";
+        String sql = """
+            insert into chat_link (chat_id, link_id) values
+            ((select id from chat where tg_chat_id = :tg_chat_id),
+            (select id from link where uri = :uri))
+            """;
 
         jdbcClient.sql(sql)
             .param("tg_chat_id", tgChatId)
@@ -119,9 +124,11 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     public Link unsubscribe(URI uri, long tgChatId) {
-        String sql = "delete from chat_link "
-            + "where chat_id = (select id from chat where tg_chat_id = :tg_chat_id) "
-            + "and link_id = (select id from link where uri = :uri)";
+        String sql = """
+            delete from chat_link
+            where chat_id = (select id from chat where tg_chat_id = :tg_chat_id)
+            and link_id = (select id from link where uri = :uri)
+            """;
 
         jdbcClient.sql(sql)
             .param("tg_chat_id", tgChatId)
@@ -139,10 +146,12 @@ public class JdbcLinkRepository implements LinkRepository {
 
     @Override
     public List<TelegramChat> getUsers(URI uri) {
-        String sql = "select chat.id, tg_chat_id from chat "
-            + "join chat_link on (chat.id = chat_link.chat_id) "
-            + "join link on (chat_link.link_id = link.id) "
-            + "where uri = :uri";
+        String sql = """
+            select chat.id, tg_chat_id from chat
+            join chat_link on (chat.id = chat_link.chat_id)
+            join link on (chat_link.link_id = link.id)
+            where uri = :uri
+            """;
 
         return jdbcClient.sql(sql)
             .param("uri", uri.toString())
