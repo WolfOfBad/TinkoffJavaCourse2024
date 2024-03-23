@@ -37,7 +37,7 @@ public class UpdateNotifierTest {
 
         verify(botClient).sendUpdate(anyLong(), anyString(), anyString(), tgChatIdCaptor.capture());
 
-        assertThat(tgChatIdCaptor.getAllValues().getFirst()).asList().isEqualTo(List.of(111L, 222L, 333L));
+        assertThat(tgChatIdCaptor.getAllValues().getFirst()).containsExactly(111L, 222L, 333L);
     }
 
 }

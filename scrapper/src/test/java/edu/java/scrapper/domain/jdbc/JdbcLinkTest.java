@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-    properties = {"app.database-access-type=jdbc", "app.scheduler.enable=false"}
+@TestPropertySource(
+    properties = {"app.database-access-type=jdbc"}
 )
 public class JdbcLinkTest extends IntegrationTest {
     @Autowired
@@ -40,7 +40,7 @@ public class JdbcLinkTest extends IntegrationTest {
 
         List<Link> result = linkRepository.getAll();
 
-        assertThat(result).asList().isEqualTo(List.of(link1, link2, link3));
+        assertThat(result).containsExactly(link1, link2, link3);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class JdbcLinkTest extends IntegrationTest {
 
         List<Link> result = linkRepository.getOldLinks(OffsetDateTime.parse("2020-02-01T00:00:00+00:00"));
 
-        assertThat(result).asList().isEqualTo(List.of(link1));
+        assertThat(result).containsExactly(link1);
     }
 
     @Test
@@ -171,7 +171,7 @@ public class JdbcLinkTest extends IntegrationTest {
 
         List<Link> result = linkRepository.getAllById(chat.tgChatId());
 
-        assertThat(result).asList().isEqualTo(List.of(link1));
+        assertThat(result).containsExactly(link1);
     }
 
     @Test
@@ -204,7 +204,7 @@ public class JdbcLinkTest extends IntegrationTest {
 
         List<TelegramChat> result = linkRepository.getUsers(link.uri());
 
-        assertThat(result).asList().isEqualTo(List.of(chat1, chat2));
+        assertThat(result).containsExactly(chat1, chat2);
     }
 
     private record Subscription(

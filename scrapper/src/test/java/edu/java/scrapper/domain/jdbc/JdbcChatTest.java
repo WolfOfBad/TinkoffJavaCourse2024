@@ -3,18 +3,18 @@ package edu.java.scrapper.domain.jdbc;
 import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.domain.dto.TelegramChat;
 import edu.java.scrapper.integration.IntegrationTest;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-    properties = {"app.database-access-type=jdbc", "app.scheduler.enable=false"}
+@TestPropertySource(
+    properties = {"app.database-access-type=jdbc"}
 )
 public class JdbcChatTest extends IntegrationTest {
     @Autowired
@@ -78,7 +78,7 @@ public class JdbcChatTest extends IntegrationTest {
 
         List<TelegramChat> result = repository.getAll();
 
-        assertThat(result).asList().isEqualTo(List.of(chat1, chat2, chat3));
+        assertThat(result).containsExactly(chat1, chat2, chat3);
     }
 
 }
