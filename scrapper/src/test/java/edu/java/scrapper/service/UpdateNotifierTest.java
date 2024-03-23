@@ -33,7 +33,7 @@ public class UpdateNotifierTest {
         TelegramChat chat2 = new TelegramChat(2, 222);
         TelegramChat chat3 = new TelegramChat(3, 333);
 
-        updateNotifier.notifyUsers(link, List.of(chat1, chat2, chat3));
+        updateNotifier.notifyUsers(link, List.of(chat1, chat2, chat3), "string");
 
         verify(botClient).sendUpdate(anyLong(), anyString(), anyString(), tgChatIdCaptor.capture());
 

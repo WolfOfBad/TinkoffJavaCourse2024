@@ -17,7 +17,7 @@ public class UpdateNotifier {
             link.id(),
             link.uri().toString(),
             description,
-            chatList.stream().map(TelegramChat::id).toList()
+            chatList.stream().map(TelegramChat::tgChatId).toList()
         );
     }
 }

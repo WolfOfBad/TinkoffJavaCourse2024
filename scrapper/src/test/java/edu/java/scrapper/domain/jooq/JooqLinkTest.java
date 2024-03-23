@@ -12,14 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(
-    properties = {"app.database-access-type=jooq", "app.scheduler.enable=false"}
+@TestPropertySource(
+    properties = {"app.database-access-type=jooq"}
 )
 public class JooqLinkTest extends IntegrationTest {
     @Autowired

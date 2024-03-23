@@ -1,5 +1,6 @@
 package edu.java.scrapper.service.defaultImpl;
 
+import edu.java.scrapper.client.github.dto.event.EventDTO;
 import edu.java.scrapper.domain.LinkRepository;
 import edu.java.scrapper.domain.dto.Link;
 import edu.java.scrapper.integration.IntegrationTest;
@@ -59,6 +60,7 @@ public class DefaultLinkUpdaterTest extends IntegrationTest {
         OffsetDateTime oldTime = OffsetDateTime.parse("2020-01-01T00:00:00+00:00");
         OffsetDateTime newTime = OffsetDateTime.parse("2021-01-01T00:00:00+00:00");
         when(linkCheckerManager.check(anyString())).thenReturn(newTime);
+        when(linkCheckerManager.getLastEvent(anyString())).thenReturn(EventDTO.getDefault());
 
         Link link = linkRepository.add(URI.create("test"));
         link = linkRepository.update(Link.builder()
@@ -86,10 +88,11 @@ public class DefaultLinkUpdaterTest extends IntegrationTest {
         Link link3 = new Link(3, URI.create("test3"), OffsetDateTime.parse("2020-03-01T00:00:00+00:00"));
         when(linkRepositoryMock.getAll()).thenReturn(List.of(link1, link2, link3));
         when(linkCheckerManager.check(anyString())).thenReturn(OffsetDateTime.parse("2020-02-02T00:00:00+00:00"));
+        when(linkCheckerManager.getLastEvent(anyString())).thenReturn(EventDTO.getDefault());
 
         defaultLinkUpdater.updateAll();
 
-        verify(updateNotifier, times(2)).notifyUsers(any(Link.class), anyList());
+        verify(updateNotifier, times(2)).notifyUsers(any(Link.class), anyList(), anyString());
     }
 
     @Test
@@ -105,10 +108,11 @@ public class DefaultLinkUpdaterTest extends IntegrationTest {
         Link link3 = new Link(3, URI.create("test3"), OffsetDateTime.parse("2020-03-01T00:00:00+00:00"));
         when(linkRepositoryMock.getOldLinks(any(OffsetDateTime.class))).thenReturn(List.of(link1, link2, link3));
         when(linkCheckerManager.check(anyString())).thenReturn(OffsetDateTime.parse("2020-02-02T00:00:00+00:00"));
+        when(linkCheckerManager.getLastEvent(anyString())).thenReturn(EventDTO.getDefault());
 
         defaultLinkUpdater.updateOldLinks(OffsetDateTime.parse("2020-01-02T00:00:00+00:00"));
 
-        verify(updateNotifier, times(2)).notifyUsers(any(Link.class), anyList());
+        verify(updateNotifier, times(2)).notifyUsers(any(Link.class), anyList(), anyString());
     }
 
 }
