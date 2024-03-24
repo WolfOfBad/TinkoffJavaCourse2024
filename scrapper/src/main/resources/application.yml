@@ -1,11 +1,11 @@
 app:
   scheduler:
-    enable: true
+    enable: false
     interval: 1m
     force-check-delay: 1d
     old-link-time: 1h
 
-  database-access-type: jooq
+  database-access-type: jpa
 
   github-client:
     base-url: https://api.github.com
