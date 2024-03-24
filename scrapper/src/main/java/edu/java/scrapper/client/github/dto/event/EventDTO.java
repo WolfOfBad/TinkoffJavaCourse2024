@@ -1,6 +1,7 @@
 package edu.java.scrapper.client.github.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.java.scrapper.client.Event;
 import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import lombok.Builder;
@@ -15,7 +16,8 @@ public record EventDTO(
     OffsetDateTime createdAt,
     @JsonProperty("payload")
     PayloadDTO payload
-) {
+) implements Event {
+    @Override
     public String getMessage() {
         return switch (EventType.getEventType(type)) {
             case PUSH -> "новый коммит в репозитории";

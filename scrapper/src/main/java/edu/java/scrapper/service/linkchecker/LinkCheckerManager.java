@@ -1,6 +1,6 @@
 package edu.java.scrapper.service.linkchecker;
 
-import edu.java.scrapper.client.github.dto.event.EventDTO;
+import edu.java.scrapper.client.Event;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ public abstract class LinkCheckerManager {
 
     public abstract OffsetDateTime check(String uri);
 
-    public abstract EventDTO getLastEvent(String uri);
+    public abstract Event getLastEvent(String uri);
 
     protected final OffsetDateTime checkNext(String uri) {
         if (nextParse == null) {
@@ -30,7 +30,7 @@ public abstract class LinkCheckerManager {
         return nextParse.check(uri);
     }
 
-    protected final EventDTO getLastEventNext(String uri) {
+    protected final Event getLastEventNext(String uri) {
         if (nextParse == null) {
             throw new RuntimeException("Wrong link format");
         }
