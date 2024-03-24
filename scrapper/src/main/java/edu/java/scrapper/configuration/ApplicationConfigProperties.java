@@ -1,5 +1,6 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.enums.RepositoryAccessType;
 import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,14 +29,29 @@ public record ApplicationConfigProperties(
 
     @NotNull
     @Name("bot-client")
-    ClientProperties botProperties
+    ClientProperties botProperties,
+
+    @NotNull
+    @DefaultValue("jdbc")
+    @Name("database-access-type")
+    RepositoryAccessType accessType
 ) {
     @Bean
-    public Duration intervalDelay() {
-        return scheduler.interval();
+    public Scheduler scheduler() {
+        return scheduler;
     }
 
-    public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
+    @Bean
+    public RepositoryAccessType implementation() {
+        return accessType;
+    }
+
+    public record Scheduler(
+        boolean enable,
+        @NotNull Duration interval,
+        @NotNull Duration oldLinkTime,
+        @NotNull Duration forceCheckDelay
+    ) {
     }
 
     public record ClientProperties(String baseUrl) {

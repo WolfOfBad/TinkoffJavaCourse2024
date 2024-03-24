@@ -80,7 +80,9 @@ public interface TgChatApi {
             @ApiResponse(responseCode = "200", description = "Чат зарегистрирован"),
             @ApiResponse(responseCode = "400", description = "Некорректные параметры запроса", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))
-            })
+            }),
+            @ApiResponse(responseCode = "409", description = "Чат уже зарегистрирован", content = {
+                @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorResponse.class))})
         }
     )
     @RequestMapping(

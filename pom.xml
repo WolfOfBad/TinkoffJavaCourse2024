@@ -22,16 +22,20 @@
 
         <!-- Spring -->
         <spring-boot.version>3.2.2</spring-boot.version>
+        <spring-boot-starter-jooq.version>3.2.2</spring-boot-starter-jooq.version>
         <spring-cloud.version>2023.0.0</spring-cloud.version>
 
         <!-- Other -->
         <jetbrains-annotations.version>24.1.0</jetbrains-annotations.version>
         <java-telegram-bot-api.version>7.0.1</java-telegram-bot-api.version>
         <lombok.version>1.18.30</lombok.version>
+        <jooq.version>3.18.13</jooq.version>
+        <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
 
         <!-- Tests -->
         <testcontainers.version>1.19.4</testcontainers.version>
         <wiremock.version>3.3.1</wiremock.version>
+
 
         <!-- Plugins -->
         <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
@@ -44,14 +48,12 @@
         <!-- Linters -->
         <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
         <checkstyle.version>10.12.7</checkstyle.version>
-
-        <!-- Openapi -->
-        <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
     </properties>
 
     <modules>
         <module>bot</module>
         <module>scrapper</module>
+        <module>scrapper-jooq</module>
     </modules>
 
     <dependencyManagement>
@@ -142,6 +144,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco-maven-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/jooq/generated/**</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
 
         </plugins>

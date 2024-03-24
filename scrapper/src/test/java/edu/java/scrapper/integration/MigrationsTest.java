@@ -30,7 +30,7 @@ public class MigrationsTest extends IntegrationTest {
             String thirdColumn = query.executeQuery().getMetaData().getColumnName(3);
 
             assertThat(firstColumn).isEqualTo("id");
-            assertThat(secondColumn).isEqualTo("text");
+            assertThat(secondColumn).isEqualTo("uri");
             assertThat(thirdColumn).isEqualTo("last_update");
         }
     }
