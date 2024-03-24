@@ -1,5 +1,6 @@
 package edu.java.scrapper.service.linkchecker;
 
+import edu.java.scrapper.client.github.dto.event.EventDTO;
 import edu.java.scrapper.client.stackoverflow.StackoverflowClient;
 import java.time.OffsetDateTime;
 import java.util.regex.Matcher;
@@ -22,5 +23,10 @@ public class StackoverflowChecker extends LinkCheckerManager {
             return client.getQuestion(id).items().getFirst().lastActivity();
         }
         return checkNext(uri);
+    }
+
+    @Override
+    public EventDTO getLastEvent(String uri) {
+        return null;
     }
 }

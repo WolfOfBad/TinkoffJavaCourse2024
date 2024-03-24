@@ -1,0 +1,42 @@
+[
+    {
+        "id": "36626775533",
+        "type": "PushEvent",
+        "actor": {
+            "id": 138949548,
+            "login": "WolfOfBad",
+            "display_login": "WolfOfBad",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/WolfOfBad",
+            "avatar_url": "https://avatars.githubusercontent.com/u/138949548?"
+        },
+        "repo": {
+            "id": 751770237,
+            "name": "WolfOfBad/TinkoffJavaCourse2024",
+            "url": "https://api.github.com/repos/WolfOfBad/TinkoffJavaCourse2024"
+        },
+        "payload": {
+            "repository_id": 751770237,
+            "push_id": 17583072250,
+            "size": 1,
+            "distinct_size": 1,
+            "ref": "refs/heads/hw5",
+            "head": "64b90e1b24ab235f2a11d4ec5426f266ea6b50d9",
+            "before": "2affc6983d88e097e2afd789e150c29678e5da59",
+            "commits": [
+                {
+                    "sha": "64b90e1b24ab235f2a11d4ec5426f266ea6b50d9",
+                    "author": {
+                        "email": "mechkov.igor04@gmail.com",
+                        "name": "WolfOfBad"
+                    },
+                    "message": "Fixed api handler",
+                    "distinct": true,
+                    "url": "https://api.github.com/repos/WolfOfBad/TinkoffJavaCourse2024/commits/64b90e1b24ab235f2a11d4ec5426f266ea6b50d9"
+                }
+            ]
+        },
+        "public": true,
+        "created_at": "2024-03-18T00:00:34Z"
+    }
+]

@@ -5,7 +5,7 @@ app:
     force-check-delay: 1d
     old-link-time: 1h
 
-  database-access-type: jdbc
+  database-access-type: jooq
 
   github-client:
     base-url: https://api.github.com

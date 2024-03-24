@@ -4,6 +4,8 @@ import edu.java.scrapper.domain.ChatRepository;
 import edu.java.scrapper.domain.LinkRepository;
 import edu.java.scrapper.domain.jdbc.JdbcChatRepository;
 import edu.java.scrapper.domain.jdbc.JdbcLinkRepository;
+import edu.java.scrapper.domain.jooq.JooqChatRepository;
+import edu.java.scrapper.domain.jooq.JooqLinkRepository;
 import edu.java.scrapper.enums.RepositoryAccessType;
 import org.jooq.DSLContext;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +24,7 @@ public class RepositoryAccessConfiguration {
     ) {
         return switch (accessType) {
             case JDBC -> new JdbcChatRepository(jdbcClient);
-            //case JOOQ -> new JooqChatRepository(dslContext);
+            case JOOQ -> new JooqChatRepository(dslContext);
         };
     }
 
@@ -35,7 +37,7 @@ public class RepositoryAccessConfiguration {
     ) {
         return switch (accessType) {
             case JDBC -> new JdbcLinkRepository(jdbcClient);
-            //case JOOQ -> new JooqLinkRepository(dslContext);
+            case JOOQ -> new JooqLinkRepository(dslContext);
         };
     }
 }
