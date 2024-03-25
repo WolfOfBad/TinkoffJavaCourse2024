@@ -12,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,10 +30,10 @@ public class ChatEntity {
     @NotNull
     private long tgChatId;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "chat_link",
                joinColumns = {@JoinColumn(name = "chat_id")},
                inverseJoinColumns = {@JoinColumn(name = "link_id")})
-    private List<LinkEntity> links;
+    private List<LinkEntity> links = new ArrayList<>();
 
 }

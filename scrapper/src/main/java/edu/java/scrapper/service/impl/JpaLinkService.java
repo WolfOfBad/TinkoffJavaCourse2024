@@ -38,7 +38,9 @@ public class JpaLinkService implements LinkService {
         }
 
         chat.getLinks().add(link);
-        chatRepository.saveAndFlush(chat);
+        chatRepository.save(chat);
+        link.getChats().add(chat);
+        linkRepository.save(link);
 
         return convertToLinkDto(link);
     }
@@ -52,8 +54,13 @@ public class JpaLinkService implements LinkService {
             .orElseThrow(() -> new NoSuchLinkException("Link does not exist"));
 
         chat.getLinks().remove(link);
+        chatRepository.save(chat);
+
+        link.getChats().remove(chat);
         if (link.getChats().isEmpty()) {
             linkRepository.delete(link);
+        } else {
+            linkRepository.save(link);
         }
 
         return convertToLinkDto(link);

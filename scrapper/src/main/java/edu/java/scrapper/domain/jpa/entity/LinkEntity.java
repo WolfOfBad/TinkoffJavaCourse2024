@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +33,6 @@ public class LinkEntity {
     private OffsetDateTime lastUpdate;
 
     @ManyToMany(mappedBy = "links")
-    private List<ChatEntity> chats;
+    private List<ChatEntity> chats = new ArrayList<>();
 
 }

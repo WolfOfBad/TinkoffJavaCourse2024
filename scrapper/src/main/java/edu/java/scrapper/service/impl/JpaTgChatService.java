@@ -40,7 +40,8 @@ public class JpaTgChatService implements TgChatService {
         chatRepository.delete(chat);
     }
 
-    private void deleteUnsubscribedLinks(List<LinkEntity> entityList) {
+    @Transactional
+    protected void deleteUnsubscribedLinks(List<LinkEntity> entityList) {
         for (LinkEntity link : entityList) {
             if (link.getChats().size() == 1) {
                 linkRepository.delete(link);

@@ -24,7 +24,7 @@ public class JpaLinkUpdater implements LinkUpdater {
     @Transactional
     public void update(Link link) {
         OffsetDateTime lastUpdate = linkCheckerManager.check(link.uri().toString());
-        if (lastUpdate.isBefore(link.lastUpdate())) {
+        if (link.lastUpdate().isBefore(lastUpdate)) {
             LinkEntity linkEntity = linkRepository.getByUri(link.uri().toString())
                 .orElseThrow(() -> new NoSuchLinkException("Link does not exist"));
 
@@ -40,13 +40,14 @@ public class JpaLinkUpdater implements LinkUpdater {
             );
 
             linkEntity.setLastUpdate(lastUpdate);
+            linkRepository.save(linkEntity);
         }
     }
 
     @Override
     @Transactional
     public void updateAll() {
-        List<LinkEntity> linkEntityList = linkRepository.findAll();
+        Iterable<LinkEntity> linkEntityList = linkRepository.findAll();
         for (LinkEntity link : linkEntityList) {
             update(Link.builder()
                 .uri(URI.create(link.getUri()))
