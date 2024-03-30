@@ -72,12 +72,12 @@ public class JpaLinkUpdaterTest extends IntegrationTest {
 
         LinkEntity link = new LinkEntity();
         link.setLastUpdate(beforeTime);
-        link.setUri("test");
+        link.setUri(URI.create("test"));
         link = linkRepository.save(link);
 
         linkUpdater.update(Link.builder()
             .id(link.getId())
-            .uri(URI.create(link.getUri()))
+            .uri(link.getUri())
             .lastUpdate(link.getLastUpdate())
             .build());
 
@@ -113,10 +113,10 @@ public class JpaLinkUpdaterTest extends IntegrationTest {
 
         LinkEntity link1 = new LinkEntity();
         link1.setLastUpdate(beforeTime);
-        link1.setUri("test1");
+        link1.setUri(URI.create("test1"));
         LinkEntity link2 = new LinkEntity();
         link2.setLastUpdate(afterTime);
-        link2.setUri("test2");
+        link2.setUri(URI.create("test2"));
         linkRepository.save(link1);
         linkRepository.save(link2);
 

@@ -56,10 +56,10 @@ public class JpaLinkServiceTest extends IntegrationTest {
         long tgChatId = 123;
         chatService.register(tgChatId);
 
-        Optional<LinkEntity> before = linkRepository.getByUri("test");
+        Optional<LinkEntity> before = linkRepository.findByUri(URI.create("test"));
         linkService.add(tgChatId, URI.create("test"));
-        Optional<LinkEntity> after = linkRepository.getByUri("test");
-        Optional<ChatEntity> chat = chatRepository.getByTgChatId(tgChatId);
+        Optional<LinkEntity> after = linkRepository.findByUri(URI.create("test"));
+        Optional<ChatEntity> chat = chatRepository.findByTgChatId(tgChatId);
 
         assertThat(before).isEmpty();
         assertThat(after).isPresent();
@@ -92,9 +92,9 @@ public class JpaLinkServiceTest extends IntegrationTest {
         chatService.register(123);
         linkService.add(123, URI.create("test"));
 
-        Optional<LinkEntity> before = linkRepository.getByUri("test");
+        Optional<LinkEntity> before = linkRepository.findByUri(URI.create("test"));
         linkService.remove(123, URI.create("test"));
-        Optional<LinkEntity> after = linkRepository.getByUri("test");
+        Optional<LinkEntity> after = linkRepository.findByUri(URI.create("test"));
 
         assertThat(before).isPresent();
         assertThat(after).isEmpty();
@@ -128,11 +128,11 @@ public class JpaLinkServiceTest extends IntegrationTest {
         linkService.add(123, URI.create("test2"));
 
         var result = linkService.allLinks(123);
-        LinkEntity link1 = linkRepository.getByUri("test1").get();
-        LinkEntity link2 = linkRepository.getByUri("test2").get();
+        LinkEntity link1 = linkRepository.findByUri(URI.create("test1")).get();
+        LinkEntity link2 = linkRepository.findByUri(URI.create("test2")).get();
 
-        Link resultLink1 = new Link(link1.getId(), URI.create(link1.getUri()), link1.getLastUpdate());
-        Link resultLink2 = new Link(link2.getId(), URI.create(link2.getUri()), link2.getLastUpdate());
+        Link resultLink1 = new Link(link1.getId(), link1.getUri(), link1.getLastUpdate());
+        Link resultLink2 = new Link(link2.getId(), link2.getUri(), link2.getLastUpdate());
 
         assertThat(result).containsExactly(resultLink1, resultLink2);
     }

@@ -7,6 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface JpaChatRepository extends CrudRepository<ChatEntity, Long> {
     @EntityGraph(attributePaths = {"links"})
-    Optional<ChatEntity> getByTgChatId(long tgChatId);
+    Optional<ChatEntity> findByTgChatId(long tgChatId);
 
 }

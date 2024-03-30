@@ -8,7 +8,6 @@ import edu.java.scrapper.exception.NoSuchLinkException;
 import edu.java.scrapper.service.LinkUpdater;
 import edu.java.scrapper.service.UpdateNotifier;
 import edu.java.scrapper.service.linkchecker.LinkCheckerManager;
-import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ public class JpaLinkUpdater implements LinkUpdater {
     public void update(Link link) {
         OffsetDateTime lastUpdate = linkCheckerManager.check(link.uri().toString());
         if (link.lastUpdate().isBefore(lastUpdate)) {
-            LinkEntity linkEntity = linkRepository.getByUri(link.uri().toString())
+            LinkEntity linkEntity = linkRepository.findByUri(link.uri())
                 .orElseThrow(() -> new NoSuchLinkException("Link does not exist"));
 
             updateNotifier.notifyUsers(
@@ -50,7 +49,7 @@ public class JpaLinkUpdater implements LinkUpdater {
         Iterable<LinkEntity> linkEntityList = linkRepository.findAll();
         for (LinkEntity link : linkEntityList) {
             update(Link.builder()
-                .uri(URI.create(link.getUri()))
+                .uri(link.getUri())
                 .lastUpdate(link.getLastUpdate())
                 .id(link.getId())
                 .build());
@@ -63,7 +62,7 @@ public class JpaLinkUpdater implements LinkUpdater {
         List<LinkEntity> linkEntityList = linkRepository.findByLastUpdateLessThanEqual(oldLinkTime);
         for (LinkEntity link : linkEntityList) {
             update(Link.builder()
-                .uri(URI.create(link.getUri()))
+                .uri(link.getUri())
                 .lastUpdate(link.getLastUpdate())
                 .id(link.getId())
                 .build());

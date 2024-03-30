@@ -1,6 +1,8 @@
 package edu.java.scrapper.domain.jpa.entity;
 
+import edu.java.scrapper.domain.jpa.UriPersistenceConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,6 +11,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +29,8 @@ public class LinkEntity {
 
     @Column(name = "uri", unique = true)
     @NotNull
-    private String uri;
+    @Convert(converter = UriPersistenceConverter.class)
+    private URI uri;
 
     @Column(name = "last_update")
     @NotNull

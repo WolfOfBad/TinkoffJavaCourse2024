@@ -42,7 +42,7 @@ public class JpaTgChatServiceTest extends IntegrationTest {
 
         chatService.register(tgChatId);
 
-        Optional<ChatEntity> chat = chatRepository.getByTgChatId(tgChatId);
+        Optional<ChatEntity> chat = chatRepository.findByTgChatId(tgChatId);
 
         assertThat(chat).isPresent();
     }
@@ -66,9 +66,9 @@ public class JpaTgChatServiceTest extends IntegrationTest {
 
         chatService.register(tgChatId);
 
-        Optional<ChatEntity> before = chatRepository.getByTgChatId(tgChatId);
+        Optional<ChatEntity> before = chatRepository.findByTgChatId(tgChatId);
         chatService.unregister(tgChatId);
-        Optional<ChatEntity> after = chatRepository.getByTgChatId(tgChatId);
+        Optional<ChatEntity> after = chatRepository.findByTgChatId(tgChatId);
 
         assertThat(before).isPresent();
         assertThat(after).isEmpty();
@@ -92,16 +92,16 @@ public class JpaTgChatServiceTest extends IntegrationTest {
     @Rollback
     public void unregisterWithLinksTest() {
         long tgChatId = 123;
-        String uri = "test";
+        URI uri = URI.create("test");
 
         chatService.register(123);
-        linkService.add(tgChatId, URI.create(uri));
+        linkService.add(tgChatId, uri);
 
-        Optional<ChatEntity> beforeChat = chatRepository.getByTgChatId(tgChatId);
-        Optional<LinkEntity> beforeLink = linkRepository.getByUri(uri);
+        Optional<ChatEntity> beforeChat = chatRepository.findByTgChatId(tgChatId);
+        Optional<LinkEntity> beforeLink = linkRepository.findByUri(uri);
         chatService.unregister(tgChatId);
-        Optional<ChatEntity> afterChat = chatRepository.getByTgChatId(tgChatId);
-        Optional<LinkEntity> afterLink = linkRepository.getByUri(uri);
+        Optional<ChatEntity> afterChat = chatRepository.findByTgChatId(tgChatId);
+        Optional<LinkEntity> afterLink = linkRepository.findByUri(uri);
 
         assertThat(beforeChat).isPresent();
         assertThat(beforeLink).isPresent();

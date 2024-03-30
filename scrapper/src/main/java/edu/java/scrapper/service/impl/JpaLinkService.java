@@ -29,7 +29,7 @@ public class JpaLinkService implements LinkService {
     @Override
     @Transactional
     public Link add(long tgChatId, URI uri) {
-        ChatEntity chat = chatRepository.getByTgChatId(tgChatId)
+        ChatEntity chat = chatRepository.findByTgChatId(tgChatId)
             .orElseThrow(() -> new NoSuchChatException("Chat does not exist"));
         LinkEntity link = getOrCreateLink(uri);
 
@@ -48,9 +48,9 @@ public class JpaLinkService implements LinkService {
     @Override
     @Transactional
     public Link remove(long tgChatId, URI uri) {
-        ChatEntity chat = chatRepository.getByTgChatId(tgChatId)
+        ChatEntity chat = chatRepository.findByTgChatId(tgChatId)
             .orElseThrow(() -> new NoSuchChatException("Chat does not exist"));
-        LinkEntity link = linkRepository.getByUri(uri.toString())
+        LinkEntity link = linkRepository.findByUri(uri)
             .orElseThrow(() -> new NoSuchLinkException("Link does not exist"));
 
         chat.getLinks().remove(link);
@@ -69,7 +69,7 @@ public class JpaLinkService implements LinkService {
     @Override
     @Transactional
     public List<Link> allLinks(long tgChatId) {
-        ChatEntity chat = chatRepository.getByTgChatId(tgChatId)
+        ChatEntity chat = chatRepository.findByTgChatId(tgChatId)
             .orElseThrow(() -> new NoSuchChatException("Chat does not exist"));
 
         return chat.getLinks().stream()
@@ -78,11 +78,11 @@ public class JpaLinkService implements LinkService {
     }
 
     private LinkEntity getOrCreateLink(URI uri) {
-        Optional<LinkEntity> link = linkRepository.getByUri(uri.toString());
+        Optional<LinkEntity> link = linkRepository.findByUri(uri);
 
         if (link.isEmpty()) {
             LinkEntity entity = new LinkEntity();
-            entity.setUri(uri.toString());
+            entity.setUri(uri);
             entity.setLastUpdate(OffsetDateTime.now());
 
             return linkRepository.save(entity);
@@ -96,7 +96,7 @@ public class JpaLinkService implements LinkService {
         return Link.builder()
             .id(link.getId())
             .lastUpdate(link.getLastUpdate())
-            .uri(URI.create(link.getUri()))
+            .uri(link.getUri())
             .build();
     }
 
