@@ -1,8 +1,7 @@
 package edu.java.bot.retry;
 
-import java.util.List;
 import edu.java.bot.configuration.ApplicationConfigProperties;
-import lombok.AllArgsConstructor;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.ClientRequest;
@@ -37,6 +36,11 @@ public class RetryExchangeFilter implements ExchangeFilterFunction {
                 if (httpStatuses.contains(code) && attempt <= maxAttempts) {
                     return Mono.delay(backoffPolicy.getWaitTime(attempt))
                         .then(Mono.defer(() -> retry(request, next, attempt + 1)));
+                } else if (attempt > maxAttempts) {
+                    return clientResponse.bodyToMono(String.class)
+                        .flatMap(errorBody -> Mono.error(new Exception(
+                            "Failed to execute client method " + maxAttempts + " times. Error: " + errorBody
+                        )));
                 }
 
                 return Mono.just(clientResponse);

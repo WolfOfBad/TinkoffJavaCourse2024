@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,7 @@ public record ApplicationConfigProperties(
     String scrapperUrl,
 
     @NotNull
+    @Name("backoff")
     BackoffConfig backoff
 ) {
     @Bean

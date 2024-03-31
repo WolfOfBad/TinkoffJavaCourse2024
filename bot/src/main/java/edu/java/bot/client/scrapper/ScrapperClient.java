@@ -17,8 +17,9 @@ public class ScrapperClient {
     private static final String LINKS_PATH = "/links";
     private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
 
-    public ScrapperClient(String baseUrl, WebClient.Builder builder, ExchangeFilterFunction retryFilter) {
-        webClient = builder.baseUrl(baseUrl)
+    public ScrapperClient(String baseUrl, ExchangeFilterFunction retryFilter) {
+        webClient = WebClient.builder()
+            .baseUrl(baseUrl)
             .filter(apiErrorHandler())
             .filter(retryFilter)
             .build();

@@ -4,15 +4,15 @@ import edu.java.scrapper.client.github.dto.RepositoryDto;
 import edu.java.scrapper.client.github.dto.event.EventDTO;
 import java.util.List;
 import java.util.function.Consumer;
-import edu.java.scrapper.retry.RetryExchangeFilter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class GithubClient {
     private final WebClient webClient;
 
-    public GithubClient(String baseUrl, RetryExchangeFilter retryExchangeFilter) {
+    public GithubClient(String baseUrl, ExchangeFilterFunction retryExchangeFilter) {
         webClient = WebClient.builder()
             .baseUrl(baseUrl)
             .filter(retryExchangeFilter)

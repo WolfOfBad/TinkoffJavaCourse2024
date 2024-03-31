@@ -1,13 +1,13 @@
 package edu.java.scrapper.client.stackoverflow;
 
 import edu.java.scrapper.client.stackoverflow.dto.QuestionDto;
-import edu.java.scrapper.retry.RetryExchangeFilter;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class StackoverflowClient {
     private final WebClient webClient;
 
-    public StackoverflowClient(String baseUrl, RetryExchangeFilter retryExchangeFilter) {
+    public StackoverflowClient(String baseUrl, ExchangeFilterFunction retryExchangeFilter) {
         webClient = WebClient.builder()
             .baseUrl(baseUrl)
             .filter(retryExchangeFilter)

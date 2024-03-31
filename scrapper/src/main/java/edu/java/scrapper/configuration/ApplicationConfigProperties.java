@@ -2,7 +2,6 @@ package edu.java.scrapper.configuration;
 
 import edu.java.scrapper.enums.RepositoryAccessType;
 import edu.java.scrapper.retry.BackoffType;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.Duration;
@@ -75,6 +74,7 @@ public record ApplicationConfigProperties(
             @DefaultValue("1s")
             Duration waitTime,
             @NotNull
+            @DefaultValue("")
             List<HttpStatus> codes
         ) {
         }

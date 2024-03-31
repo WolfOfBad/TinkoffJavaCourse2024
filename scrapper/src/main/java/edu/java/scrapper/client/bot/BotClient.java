@@ -3,7 +3,6 @@ package edu.java.scrapper.client.bot;
 import edu.java.scrapper.client.bot.dto.request.LinkUpdateRequest;
 import java.net.URI;
 import java.util.List;
-import edu.java.scrapper.retry.RetryExchangeFilter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -12,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class BotClient {
     private final WebClient webClient;
 
-    public BotClient(String baseUrl, RetryExchangeFilter retryExchangeFilter) {
+    public BotClient(String baseUrl, ExchangeFilterFunction retryExchangeFilter) {
         webClient = WebClient.builder()
             .baseUrl(baseUrl)
             .filter(apiErrorHandler())

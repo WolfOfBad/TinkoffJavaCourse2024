@@ -1,22 +1,36 @@
 package edu.java.scrapper.client;
 
 import edu.java.scrapper.client.bot.BotClient;
-import java.util.List;
+import edu.java.scrapper.configuration.ApplicationConfigProperties;
+import edu.java.scrapper.retry.BackoffType;
 import edu.java.scrapper.retry.RetryExchangeFilter;
-import org.junit.jupiter.api.BeforeEach;
+import edu.java.scrapper.retry.impl.ConstantBackoff;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(WireMockServerExtension.class)
 public class BotClientTest {
-    @BeforeEach
+    private ExchangeFilterFunction retryFilter = new RetryExchangeFilter(
+        new ConstantBackoff(Duration.ZERO),
+        new ApplicationConfigProperties.ClientProperties.BackoffConfig(
+            BackoffType.CONSTANT,
+            2,
+            Duration.ZERO,
+            new ArrayList<>()
+        )
+    );
+
+    @AfterEach
     public void before() {
         WireMockServerExtension.resetAll();
     }
@@ -28,7 +42,7 @@ public class BotClientTest {
 
         BotClient client = new BotClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            mock(RetryExchangeFilter.class)
+            retryFilter
         );
 
         assertDoesNotThrow(() -> client.sendUpdate(1, "uri", "desc", List.of(1L)));
@@ -53,7 +67,7 @@ public class BotClientTest {
 
         BotClient client = new BotClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            mock(RetryExchangeFilter.class)
+            retryFilter
         );
 
         assertThrows(
