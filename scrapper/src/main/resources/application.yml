@@ -43,6 +43,13 @@ app:
         - service_unavailable
         - gateway_timeout
 
+  rate-limit:
+    capacity: 100
+    refill-rate: 100
+    refill-time: 1h
+    cache-size: 10_000
+    expire-time: 2h
+
 spring:
   application:
     name: scrapper

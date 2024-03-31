@@ -38,7 +38,11 @@ public record ApplicationConfigProperties(
     @NotNull
     @DefaultValue("jdbc")
     @Name("database-access-type")
-    RepositoryAccessType accessType
+    RepositoryAccessType accessType,
+
+    @NotNull
+    @Name("rate-limit")
+    RateLimit rateLimit
 ) {
     @Bean
     public Scheduler scheduler() {
@@ -48,6 +52,11 @@ public record ApplicationConfigProperties(
     @Bean
     public RepositoryAccessType implementation() {
         return accessType;
+    }
+
+    @Bean
+    public RateLimit rateLimit() {
+        return rateLimit;
     }
 
     public record Scheduler(
@@ -78,6 +87,28 @@ public record ApplicationConfigProperties(
             List<HttpStatus> codes
         ) {
         }
+    }
+
+    public record RateLimit(
+        @NotNull
+        @DefaultValue("false")
+        boolean enabled,
+        @NotNull
+        @DefaultValue("100")
+        long capacity,
+        @NotNull
+        @DefaultValue("100")
+        long refillRate,
+        @NotNull
+        @DefaultValue("10000")
+        long cacheSize,
+        @NotNull
+        @DefaultValue("1h")
+        Duration refillTime,
+        @NotNull
+        @DefaultValue("2h")
+        Duration expireTime
+    ) {
     }
 
 }
