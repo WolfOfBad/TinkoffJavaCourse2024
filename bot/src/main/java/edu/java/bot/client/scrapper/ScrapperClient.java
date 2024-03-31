@@ -17,8 +17,11 @@ public class ScrapperClient {
     private static final String LINKS_PATH = "/links";
     private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
 
-    public ScrapperClient(String baseUrl, WebClient.Builder builder) {
-        webClient = builder.baseUrl(baseUrl).filter(apiErrorHandler()).build();
+    public ScrapperClient(String baseUrl, WebClient.Builder builder, ExchangeFilterFunction retryFilter) {
+        webClient = builder.baseUrl(baseUrl)
+            .filter(apiErrorHandler())
+            .filter(retryFilter)
+            .build();
     }
 
     public void registerChat(long id) {

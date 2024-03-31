@@ -2,6 +2,7 @@ package edu.java.scrapper.client;
 
 import edu.java.scrapper.client.bot.BotClient;
 import java.util.List;
+import edu.java.scrapper.retry.RetryExchangeFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(WireMockServerExtension.class)
 public class BotClientTest {
@@ -26,7 +28,7 @@ public class BotClientTest {
 
         BotClient client = new BotClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            mock(RetryExchangeFilter.class)
         );
 
         assertDoesNotThrow(() -> client.sendUpdate(1, "uri", "desc", List.of(1L)));
@@ -51,7 +53,7 @@ public class BotClientTest {
 
         BotClient client = new BotClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            mock(RetryExchangeFilter.class)
         );
 
         assertThrows(

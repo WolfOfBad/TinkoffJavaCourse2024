@@ -1,12 +1,17 @@
 package edu.java.scrapper.configuration;
 
 import edu.java.scrapper.enums.RepositoryAccessType;
+import edu.java.scrapper.retry.BackoffType;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.time.Duration;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.validation.annotation.Validated;
 
@@ -54,6 +59,25 @@ public record ApplicationConfigProperties(
     ) {
     }
 
-    public record ClientProperties(String baseUrl) {
+    public record ClientProperties(
+        String baseUrl,
+        BackoffConfig backoff
+    ) {
+        public record BackoffConfig(
+            @NotNull
+            @DefaultValue("constant")
+            BackoffType type,
+            @NotNull
+            @PositiveOrZero
+            @DefaultValue("0")
+            int maxAttempts,
+            @NotNull
+            @DefaultValue("1s")
+            Duration waitTime,
+            @NotNull
+            List<HttpStatus> codes
+        ) {
+        }
     }
+
 }
