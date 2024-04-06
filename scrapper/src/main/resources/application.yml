@@ -9,12 +9,46 @@ app:
 
   github-client:
     base-url: https://api.github.com
+    backoff:
+      max-attempts: 10
+      wait-time: 1s
+      type: linear
+      codes:
+        - internal_server_error
+        - bad_gateway
+        - service_unavailable
+        - gateway_timeout
 
   stackoverflow-client:
     base-url: https://api.stackexchange.com
+    backoff:
+      max-attempts: 5
+      wait-time: 5s
+      type: exponential
+      codes:
+        - internal_server_error
+        - bad_gateway
+        - service_unavailable
+        - gateway_timeout
 
   bot-client:
     base-url: http://localhost:8090
+    backoff:
+      max-attempts: 3
+      wait-time: 2s
+      type: constant
+      codes:
+        - internal_server_error
+        - bad_gateway
+        - service_unavailable
+        - gateway_timeout
+
+  rate-limit:
+    capacity: 100
+    refill-rate: 100
+    refill-time: 1h
+    cache-size: 10_000
+    expire-time: 2h
 
 spring:
   application:

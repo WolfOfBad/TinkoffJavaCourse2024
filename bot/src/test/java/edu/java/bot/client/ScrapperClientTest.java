@@ -3,11 +3,17 @@ package edu.java.bot.client;
 import edu.java.bot.client.scrapper.ScrapperClient;
 import edu.java.bot.client.scrapper.dto.response.LinkResponse;
 import edu.java.bot.client.scrapper.dto.response.ListLinksResponse;
+import edu.java.bot.configuration.ApplicationConfigProperties;
+import edu.java.bot.retry.BackoffType;
+import edu.java.bot.retry.RetryExchangeFilter;
+import edu.java.bot.retry.impl.ConstantBackoff;
 import java.net.URI;
-import org.junit.jupiter.api.BeforeEach;
+import java.time.Duration;
+import java.util.ArrayList;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -19,8 +25,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(WireMockServerExtension.class)
 public class ScrapperClientTest {
-    @BeforeEach
-    public void before() {
+    private ExchangeFilterFunction retryFilter = new RetryExchangeFilter(
+        new ConstantBackoff(Duration.ZERO),
+        new ApplicationConfigProperties.BackoffConfig(
+            BackoffType.CONSTANT,
+            2,
+            Duration.ZERO,
+            new ArrayList<>()
+        )
+    );
+
+    @AfterEach
+    public void after() {
         WireMockServerExtension.resetAll();
     }
 
@@ -31,7 +47,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertDoesNotThrow(() -> client.registerChat(1));
@@ -57,7 +73,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertThrows(
@@ -73,7 +89,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertDoesNotThrow(() -> client.deleteChat(1));
@@ -99,7 +115,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertThrows(
@@ -129,7 +145,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         ListLinksResponse response = client.getTrackedLinks(1);
@@ -159,7 +175,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertThrows(
@@ -184,7 +200,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         LinkResponse response = client.addLink(1, "link");
@@ -213,7 +229,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertThrows(
@@ -238,7 +254,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         LinkResponse response = client.deleteLink(1, "link");
@@ -267,7 +283,7 @@ public class ScrapperClientTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            WebClient.builder()
+            retryFilter
         );
 
         assertThrows(

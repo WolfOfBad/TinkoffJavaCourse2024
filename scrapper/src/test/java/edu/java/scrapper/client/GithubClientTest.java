@@ -4,12 +4,19 @@ import edu.java.scrapper.client.github.GithubClient;
 import edu.java.scrapper.client.github.dto.RepositoryDto;
 import edu.java.scrapper.client.github.dto.event.Action;
 import edu.java.scrapper.client.github.dto.event.EventType;
+import edu.java.scrapper.configuration.ApplicationConfigProperties;
+import edu.java.scrapper.retry.BackoffType;
+import edu.java.scrapper.retry.RetryExchangeFilter;
+import edu.java.scrapper.retry.impl.ConstantBackoff;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.OffsetDateTime;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.ArrayList;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import wiremock.com.google.common.io.Resources;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -18,7 +25,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(WireMockServerExtension.class)
 public class GithubClientTest {
-    @BeforeEach
+    private ExchangeFilterFunction retryFilter = new RetryExchangeFilter(
+        new ConstantBackoff(Duration.ZERO),
+        new ApplicationConfigProperties.ClientProperties.BackoffConfig(
+            BackoffType.CONSTANT,
+            2,
+            Duration.ZERO,
+            new ArrayList<>()
+        )
+    );
+
+    @AfterEach
     public void before() {
         WireMockServerExtension.resetAll();
     }
@@ -35,7 +52,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         RepositoryDto result = client.getRepository("user", "rep");
 
         assertThat(result).isNotNull();
@@ -59,7 +76,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.createdAt()).isEqualTo(OffsetDateTime.parse("2024-03-18T00:00:34Z"));
@@ -79,7 +96,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.createdAt()).isEqualTo(OffsetDateTime.parse("2024-03-17T20:25:24Z"));
@@ -99,7 +116,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.createdAt()).isEqualTo(OffsetDateTime.parse("2024-03-17T20:20:37Z"));
@@ -120,7 +137,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.createdAt()).isEqualTo(OffsetDateTime.parse("2024-03-17T20:20:37Z"));
@@ -141,7 +158,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.createdAt()).isEqualTo(OffsetDateTime.parse("2024-03-14T09:42:21Z"));
@@ -161,7 +178,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.getType()).isEqualTo(EventType.UNKNOWN);
@@ -177,7 +194,7 @@ public class GithubClientTest {
                 .withHeader("Content-Type", "application/json")
                 .withBody(repositoryBody)));
 
-        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort());
+        GithubClient client = new GithubClient("http://localhost:" + WireMockServerExtension.getPort(), retryFilter);
         var result = client.getEvent("user", "rep");
 
         assertThat(result.getType()).isEqualTo(EventType.UNKNOWN);

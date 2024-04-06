@@ -31,6 +31,7 @@
         <lombok.version>1.18.30</lombok.version>
         <jooq.version>3.18.13</jooq.version>
         <springdoc-openapi.version>2.3.0</springdoc-openapi.version>
+        <bucket4j.version>8.1.0</bucket4j.version>
 
         <!-- Tests -->
         <testcontainers.version>1.19.4</testcontainers.version>

@@ -2,6 +2,15 @@ app:
   # Add your token in environment variables
   telegram-token: ${APP_TELEGRAM_TOKEN}
   scrapper-url: http://localhost:8080
+  backoff:
+    type: exponential
+    wait-time: 1s
+    max-attempts: 5
+    codes:
+      - internal_server_error
+      - bad_gateway
+      - service_unavailable
+      - gateway_timeout
 
 spring:
   application:

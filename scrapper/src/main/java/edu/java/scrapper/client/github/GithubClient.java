@@ -6,13 +6,17 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class GithubClient {
     private final WebClient webClient;
 
-    public GithubClient(String baseUrl) {
-        webClient = WebClient.builder().baseUrl(baseUrl).build();
+    public GithubClient(String baseUrl, ExchangeFilterFunction retryExchangeFilter) {
+        webClient = WebClient.builder()
+            .baseUrl(baseUrl)
+            .filter(retryExchangeFilter)
+            .build();
     }
 
     public RepositoryDto getRepository(String user, String repository) {

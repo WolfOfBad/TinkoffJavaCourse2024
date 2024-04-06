@@ -11,8 +11,12 @@ import reactor.core.publisher.Mono;
 public class BotClient {
     private final WebClient webClient;
 
-    public BotClient(String baseUrl, WebClient.Builder builder) {
-        webClient = builder.baseUrl(baseUrl).filter(apiErrorHandler()).build();
+    public BotClient(String baseUrl, ExchangeFilterFunction retryExchangeFilter) {
+        webClient = WebClient.builder()
+            .baseUrl(baseUrl)
+            .filter(apiErrorHandler())
+            .filter(retryExchangeFilter)
+            .build();
     }
 
     public void sendUpdate(long id, String uri, String description, List<Long> tgChatIds) {
