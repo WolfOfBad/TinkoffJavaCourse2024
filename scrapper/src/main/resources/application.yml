@@ -31,6 +31,7 @@ app:
         - service_unavailable
         - gateway_timeout
 
+  bot-api: kafka
   bot-client:
     base-url: http://localhost:8090
     backoff:
@@ -49,6 +50,13 @@ app:
     refill-time: 1h
     cache-size: 10_000
     expire-time: 2h
+
+kafka:
+  scrapper-topic:
+    name: scrapper
+    partitions: 4
+    replicas: 1
+    bootstrap-address: http://localhost:9092
 
 spring:
   application:
