@@ -17,6 +17,14 @@ kafka:
     name: scrapper
     listener-id: 0
     bootstrap-address: http://localhost:9092
+    partitions: 4
+    replicas: 1
+  dlq-topic:
+    name: scrapper_dlq
+    listener-id: 0
+    bootstrap-address: http://localhost:9092
+    partitions: 1
+    replicas: 1
 
 spring:
   application:
