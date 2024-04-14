@@ -1,6 +1,7 @@
 package edu.java.bot.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.java.bot.controller.dto.request.LinkUpdateRequest;
 import edu.java.bot.kafka.UpdatesKafkaQueueListener;
 import edu.java.bot.service.UpdatesSendService;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,6 +23,8 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.converter.JsonMessageConverter;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @ConfigurationProperties(prefix = "kafka", ignoreUnknownFields = false)
 public record KafkaConfiguration(
@@ -49,21 +52,23 @@ public record KafkaConfiguration(
     }
 
     @Bean
-    public ConsumerFactory<String, String> updateConsumerFactory() {
+    public ConsumerFactory<String, LinkUpdateRequest> updateConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, scrapperTopicConfig.bootstrapAddress);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, scrapperTopicConfig.listenerId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, String> updateKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+    public ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> updateKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, LinkUpdateRequest> factory =
             new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(updateConsumerFactory());
+        factory.setRecordMessageConverter(new JsonMessageConverter(new ObjectMapper()));
         return factory;
     }
 
@@ -84,12 +89,10 @@ public record KafkaConfiguration(
 
     @Bean
     public UpdatesKafkaQueueListener updatesKafkaQueueListener(
-        UpdatesSendService updatesSendService,
-        ObjectMapper mapper
+        UpdatesSendService updatesSendService
     ) {
         return new UpdatesKafkaQueueListener(
             updatesSendService,
-            mapper,
             updateKafkaTemplate(),
             dlqTopicConfig.topicName
         );

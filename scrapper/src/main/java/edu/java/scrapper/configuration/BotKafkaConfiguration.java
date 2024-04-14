@@ -1,7 +1,7 @@
 package edu.java.scrapper.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.java.scrapper.client.bot.BotClient;
+import edu.java.scrapper.client.bot.dto.request.LinkUpdateRequest;
 import edu.java.scrapper.client.bot.kafka.ScrapperQueueProducer;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +17,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @ConfigurationProperties(prefix = "kafka", ignoreUnknownFields = false)
 @ConditionalOnProperty(prefix = "app", name = "bot-api", havingValue = "kafka")
@@ -26,24 +27,24 @@ public record BotKafkaConfiguration(
     TopicConfig scrapperTopicConfig
 ) {
     @Bean
-    public ProducerFactory<String, String> updatesProducerFactory() {
+    public ProducerFactory<String, LinkUpdateRequest> updatesProducerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, scrapperTopicConfig.bootstrapAddress);
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
         return new DefaultKafkaProducerFactory<>(configProps);
     }
 
     @Bean
-    public KafkaTemplate<String, String> updatesKafkaTemplate() {
+    public KafkaTemplate<String, LinkUpdateRequest> updatesKafkaTemplate() {
         return new KafkaTemplate<>(updatesProducerFactory());
     }
 
     @Bean
     @ConditionalOnProperty(prefix = "app", name = "bot-api", havingValue = "kafka")
-    public BotClient scrapperQueueProducer(ObjectMapper mapper) {
-        return new ScrapperQueueProducer(updatesKafkaTemplate(), scrapperTopicConfig.topicName, mapper);
+    public BotClient scrapperQueueProducer() {
+        return new ScrapperQueueProducer(updatesKafkaTemplate(), scrapperTopicConfig.topicName);
     }
 
     public record TopicConfig(
