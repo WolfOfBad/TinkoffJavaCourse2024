@@ -1,7 +1,7 @@
 app:
   # Add your token in environment variables
   telegram-token: ${APP_TELEGRAM_TOKEN}
-  scrapper-url: http://localhost:8080
+  scrapper-url: http://localhost:8081
   backoff:
     type: exponential
     wait-time: 1s
@@ -39,5 +39,3 @@ management:
         include: health, info, prometheus
       path-mapping:
         prometheus: /metrics
-  server:
-    port: 8091
