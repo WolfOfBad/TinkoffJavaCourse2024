@@ -78,6 +78,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiErrorResponse'
+        '401':
+          description: Чат не зарегестрирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiErrorResponse'
     post:
       summary: Добавить отслеживание ссылки
       parameters:

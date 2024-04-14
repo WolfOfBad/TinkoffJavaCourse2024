@@ -2,6 +2,9 @@ package edu.java.bot.model;
 
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.client.scrapper.ScrapperClient;
+import edu.java.bot.client.scrapper.dto.response.LinkResponse;
+import edu.java.bot.client.scrapper.dto.response.ListLinksResponse;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.command.impl.HelpCommand;
 import edu.java.bot.model.command.impl.ListCommand;
@@ -37,7 +40,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CommandTest {
     @Mock
-    private UserRepository repository;
+    private ScrapperClient client;
 
     @Mock
     private Update update;
@@ -74,9 +77,12 @@ public class CommandTest {
 
     @Test
     public void listCommandTest() {
-        when(repository.getLinks(any(User.class))).thenReturn(Optional.of(List.of(new Link(URI.create("link")))));
+        when(client.getTrackedLinks(any())).thenReturn(new ListLinksResponse(
+            List.of(new LinkResponse(1, URI.create("link"))),
+            1
+        ));
 
-        Command command = new ListCommand(repository, botService);
+        Command command = new ListCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -87,9 +93,13 @@ public class CommandTest {
 
     @Test
     public void userNotExistListCommandTest() {
-        when(repository.getLinks(any(User.class))).thenReturn(Optional.empty());
+        when(client.getTrackedLinks(any())).thenReturn(new ListLinksResponse(
+                List.of(),
+                0
+            )
+        );
 
-        Command command = new ListCommand(repository, botService);
+        Command command = new ListCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -102,9 +112,9 @@ public class CommandTest {
 
     @Test
     public void noLinksListCommandTest() {
-        when(repository.getLinks(any(User.class))).thenReturn(Optional.of(List.of()));
+        when(client.getTrackedLinks(any())).thenReturn(null);
 
-        Command command = new ListCommand(repository, botService);
+        Command command = new ListCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -116,9 +126,7 @@ public class CommandTest {
 
     @Test
     public void resetCommandTest() {
-        when(repository.deleteUser(any(User.class))).thenReturn(UserRepository.Result.OK);
-
-        Command command = new ResetCommand(repository, botService);
+        Command command = new ResetCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -131,9 +139,7 @@ public class CommandTest {
 
     @Test
     public void userNotExistResetCommandTest() {
-        when(repository.deleteUser(any(User.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
-
-        Command command = new ResetCommand(repository, botService);
+        Command command = new ResetCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -146,9 +152,7 @@ public class CommandTest {
 
     @Test
     public void startCommandTest() {
-        when(repository.register(any(User.class))).thenReturn(UserRepository.Result.OK);
-
-        Command command = new StartCommand(repository, botService);
+        Command command = new StartCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -163,9 +167,7 @@ public class CommandTest {
 
     @Test
     public void userAlreadyExistStartCommandTest() {
-        when(repository.register(any(User.class))).thenReturn(UserRepository.Result.USER_ALREADY_EXIST);
-
-        Command command = new StartCommand(repository, botService);
+        Command command = new StartCommand(client, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -178,11 +180,11 @@ public class CommandTest {
 
     @Test
     public void trackCommandTest() {
-        when(repository.addLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.OK);
+        when(client.addLink(any(), any())).thenReturn(null);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new TrackCommand(repository, parser, botService);
+        Command command = new TrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -195,11 +197,11 @@ public class CommandTest {
 
     @Test
     public void userNotExistTrackCommandTest() {
-        when(repository.addLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
+        when(client.addLink(any(), any())).thenReturn(mock(LinkResponse.class));
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new TrackCommand(repository, parser, botService);
+        Command command = new TrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -212,11 +214,11 @@ public class CommandTest {
 
     @Test
     public void linkAlreadyExistTrackCommandTest() {
-        when(repository.addLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.LINK_ALREADY_EXIST);
+        when(client.addLink(any(), any())).thenReturn(null);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new TrackCommand(repository, parser, botService);
+        Command command = new TrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -231,7 +233,7 @@ public class CommandTest {
     public void noLinkTrackCommandTest() {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.empty());
 
-        Command command = new TrackCommand(repository, parser, botService);
+        Command command = new TrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -247,7 +249,7 @@ public class CommandTest {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
         when(parser.parse(any(String.class))).thenReturn(Optional.empty());
 
-        Command command = new TrackCommand(repository, parser, botService);
+        Command command = new TrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -260,11 +262,11 @@ public class CommandTest {
 
     @Test
     public void untrackCommandTest() {
-        when(repository.deleteLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.OK);
+        when(client.deleteLink(any(), any())).thenReturn(null);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new UntrackCommand(repository, parser, botService);
+        Command command = new UntrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -276,11 +278,11 @@ public class CommandTest {
 
     @Test
     public void userNotExistUntrackCommandTest() {
-        when(repository.deleteLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.USER_NOT_EXIST);
+        when(client.deleteLink(any(), any())).thenReturn(null);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new UntrackCommand(repository, parser, botService);
+        Command command = new UntrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -293,11 +295,11 @@ public class CommandTest {
 
     @Test
     public void linkNotExistUntrackCommandTest() {
-        when(repository.deleteLink(any(User.class), any(Link.class))).thenReturn(UserRepository.Result.LINK_NOT_EXIST);
+        when(client.deleteLink(any(), any())).thenReturn(null);
         when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
-        Command command = new UntrackCommand(repository, parser, botService);
+        Command command = new UntrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -312,7 +314,7 @@ public class CommandTest {
     public void noLinkUntrackCommandTest() {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.empty());
 
-        Command command = new UntrackCommand(repository, parser, botService);
+        Command command = new UntrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -328,7 +330,7 @@ public class CommandTest {
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
         when(parser.parse(any(String.class))).thenReturn(Optional.empty());
 
-        Command command = new UntrackCommand(repository, parser, botService);
+        Command command = new UntrackCommand(client, parser, botService);
         command.execute(update);
 
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);

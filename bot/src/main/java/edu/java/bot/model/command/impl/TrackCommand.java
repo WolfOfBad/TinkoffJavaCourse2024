@@ -1,11 +1,12 @@
 package edu.java.bot.model.command.impl;
 
 import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.client.scrapper.ScrapperClient;
+import edu.java.bot.exception.scrapper.ScrapperException;
 import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
-import edu.java.bot.repository.UserRepository;
 import edu.java.bot.service.SendMessageService;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class TrackCommand implements Command {
-    private final UserRepository repository;
+    private final ScrapperClient client;
     private final LinkParserManager parser;
     private final SendMessageService sendMessageService;
     private final Logger logger = LogManager.getLogger();
@@ -40,7 +41,7 @@ public class TrackCommand implements Command {
         return "/track";
     }
 
-    private String getMessage(Update update, User user) throws Exception {
+    private String getMessage(Update update, User user) {
         Optional<String> uri = parser.getUri(update);
         if (uri.isEmpty()) {
             return "Чтобы начать отслеживать ресурс, отправьте /track и ссылку на этот ресурс";
@@ -52,20 +53,14 @@ public class TrackCommand implements Command {
             return "Данный ресурс, к сожалению, пока не поддерживается";
         }
 
-        UserRepository.Result result = repository.addLink(user, link.get());
+        try {
+            client.addLink(user.id(), link.get().uri().toString());
 
-        return switch (result) {
-            case OK -> "Вы начали отслеживание сайта. "
+            return "Вы начали отслеживание сайта. "
                 + "Теперь при обновлении контента по ссылке, вы получите уведомление";
-
-            case USER_NOT_EXIST -> "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу с ботом";
-
-            case LINK_ALREADY_EXIST -> "Вы уже отслеживаете эту ссылку. "
-                + "Введите /list, чтобы увидеть все отслеживаемые ссылки";
-
-            default ->
-                throw new Exception("Unexpected switch result. Class: " + this.getClass() + " Result: " + result);
-        };
+        } catch (ScrapperException e) {
+            return e.getTelegramMessage();
+        }
     }
 
 }

@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import reactor.core.publisher.Mono;
 
-@Service
+@Service("retryExchangeFilter")
 public class RetryExchangeFilter implements ExchangeFilterFunction {
     private final BackoffPolicy backoffPolicy;
     private final List<HttpStatus> httpStatuses;
