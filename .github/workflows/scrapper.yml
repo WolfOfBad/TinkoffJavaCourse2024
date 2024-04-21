@@ -38,6 +38,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: scrapper/
+          file: ./scrapper.Dockerfile
           push: true
           tags: ghcr.io/wolfofbad/scrapper:latest
 
