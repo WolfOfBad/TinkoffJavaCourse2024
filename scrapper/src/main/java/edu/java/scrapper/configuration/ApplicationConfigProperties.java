@@ -1,7 +1,9 @@
 package edu.java.scrapper.configuration;
 
+import edu.java.scrapper.enums.CommunicationApi;
 import edu.java.scrapper.enums.RepositoryAccessType;
 import edu.java.scrapper.retry.BackoffType;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.time.Duration;
@@ -42,7 +44,12 @@ public record ApplicationConfigProperties(
 
     @NotNull
     @Name("rate-limit")
-    RateLimit rateLimit
+    RateLimit rateLimit,
+
+    @NotNull
+    @Name("bot-api")
+    @DefaultValue("http")
+    CommunicationApi botCommunicationApi
 ) {
     @Bean
     public Scheduler scheduler() {
@@ -68,7 +75,10 @@ public record ApplicationConfigProperties(
     }
 
     public record ClientProperties(
+        @NotEmpty
+        @NotNull
         String baseUrl,
+        @NotNull
         BackoffConfig backoff
     ) {
         public record BackoffConfig(

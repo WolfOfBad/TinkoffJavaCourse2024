@@ -1,10 +1,13 @@
 package edu.java.scrapper.client;
 
 import edu.java.scrapper.client.bot.BotClient;
+import edu.java.scrapper.client.bot.dto.request.LinkUpdateRequest;
+import edu.java.scrapper.client.bot.http.HttpBotClient;
 import edu.java.scrapper.configuration.ApplicationConfigProperties;
 import edu.java.scrapper.retry.BackoffType;
 import edu.java.scrapper.retry.RetryExchangeFilter;
 import edu.java.scrapper.retry.impl.ConstantBackoff;
+import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(WireMockServerExtension.class)
-public class BotClientTest {
-    private ExchangeFilterFunction retryFilter = new RetryExchangeFilter(
+public class HttpBotClientTest {
+    private final ExchangeFilterFunction retryFilter = new RetryExchangeFilter(
         new ConstantBackoff(Duration.ZERO),
         new ApplicationConfigProperties.ClientProperties.BackoffConfig(
             BackoffType.CONSTANT,
@@ -40,12 +43,13 @@ public class BotClientTest {
         WireMockServerExtension.getWireMockServer().stubFor(post(urlPathMatching("/updates"))
             .willReturn(aResponse().withStatus(200)));
 
-        BotClient client = new BotClient(
+        BotClient client = new HttpBotClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
             retryFilter
         );
 
-        assertDoesNotThrow(() -> client.sendUpdate(1, "uri", "desc", List.of(1L)));
+        assertDoesNotThrow(() -> client.send(new LinkUpdateRequest(
+            123, URI.create("uri"), "desc", List.of(1L))));
     }
 
     @Test
@@ -65,14 +69,15 @@ public class BotClientTest {
                     }
                     """)));
 
-        BotClient client = new BotClient(
+        BotClient client = new HttpBotClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
             retryFilter
         );
 
         assertThrows(
             Exception.class,
-            () -> client.sendUpdate(1, "uri", "desc", List.of(1L))
+            () -> client.send(new LinkUpdateRequest(
+                123, URI.create("uri"), "desc", List.of(1L)))
         );
     }
 }

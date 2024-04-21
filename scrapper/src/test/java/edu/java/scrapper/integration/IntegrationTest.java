@@ -21,7 +21,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-@SpringBootTest
+@SpringBootTest(properties = "app.bot-api=http")
 public abstract class IntegrationTest {
     public static PostgreSQLContainer<?> POSTGRES;
 
