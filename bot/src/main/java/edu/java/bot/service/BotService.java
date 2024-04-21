@@ -9,7 +9,6 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.model.command.Command;
 import io.micrometer.core.instrument.Counter;
 import java.util.List;
-import io.micrometer.core.instrument.Counter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;

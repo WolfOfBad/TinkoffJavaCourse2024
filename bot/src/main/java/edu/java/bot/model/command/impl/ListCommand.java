@@ -23,11 +23,16 @@ public class ListCommand implements Command {
         try {
             ListLinksResponse links = client.getTrackedLinks(user.id());
 
-            String message = links.links().stream()
-                .map(e -> e.uri().toString())
-                .reduce("", (s, e) -> s + "\n" + e);
+            String message;
+            if (links.size() == 0) {
+                message = "Сейчас вы не отслеживаете никаких ссылок";
+            } else {
+                message = "Список отслеживаемых ссылок:\n" + links.links().stream()
+                    .map(e -> e.uri().toString())
+                    .reduce("", (s, e) -> s + "\n" + e);
+            }
 
-            sendMessageService.sendMessage(user, "Список отслеживаемых ссылок:\n" + message);
+            sendMessageService.sendMessage(user, message);
         } catch (ScrapperException e) {
             sendMessageService.sendMessage(user, e.getTelegramMessage());
         }

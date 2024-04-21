@@ -5,6 +5,9 @@ import com.pengrad.telegrambot.model.Update;
 import edu.java.bot.client.scrapper.ScrapperClient;
 import edu.java.bot.client.scrapper.dto.response.LinkResponse;
 import edu.java.bot.client.scrapper.dto.response.ListLinksResponse;
+import edu.java.bot.exception.scrapper.AlreadySubscribedException;
+import edu.java.bot.exception.scrapper.NoSuchChatException;
+import edu.java.bot.exception.scrapper.NoSuchLinkException;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.command.impl.HelpCommand;
 import edu.java.bot.model.command.impl.ListCommand;
@@ -16,7 +19,6 @@ import edu.java.bot.model.command.impl.UnknownFailCommand;
 import edu.java.bot.model.command.impl.UntrackCommand;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
-import edu.java.bot.repository.UserRepository;
 import edu.java.bot.service.SendMessageService;
 import java.net.URI;
 import java.util.List;
@@ -29,11 +31,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -57,11 +61,15 @@ public class CommandTest {
     @Mock
     private SendMessageService botService;
 
+    @Mock
+    private Link link;
+
     @BeforeEach
     public void before() {
         lenient().when(update.message()).thenReturn(message);
         lenient().when(message.from()).thenReturn(user);
         lenient().when(user.id()).thenReturn(1L);
+        lenient().when(link.uri()).thenReturn(URI.create("uri"));
     }
 
     @Test
@@ -77,7 +85,7 @@ public class CommandTest {
 
     @Test
     public void listCommandTest() {
-        when(client.getTrackedLinks(any())).thenReturn(new ListLinksResponse(
+        when(client.getTrackedLinks(anyLong())).thenReturn(new ListLinksResponse(
             List.of(new LinkResponse(1, URI.create("link"))),
             1
         ));
@@ -88,16 +96,12 @@ public class CommandTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(botService).sendMessage(any(User.class), captor.capture());
 
-        assertThat(captor.getAllValues().getFirst()).isEqualTo("Список отслеживаемых ссылок:\nlink\n");
+        assertThat(captor.getAllValues().getFirst()).isEqualTo("Список отслеживаемых ссылок:\n\nlink");
     }
 
     @Test
     public void userNotExistListCommandTest() {
-        when(client.getTrackedLinks(any())).thenReturn(new ListLinksResponse(
-                List.of(),
-                0
-            )
-        );
+        when(client.getTrackedLinks(anyLong())).thenThrow(NoSuchChatException.class);
 
         Command command = new ListCommand(client, botService);
         command.execute(update);
@@ -112,7 +116,10 @@ public class CommandTest {
 
     @Test
     public void noLinksListCommandTest() {
-        when(client.getTrackedLinks(any())).thenReturn(null);
+        when(client.getTrackedLinks(anyLong())).thenReturn(new ListLinksResponse(
+            List.of(),
+            0
+        ));
 
         Command command = new ListCommand(client, botService);
         command.execute(update);
@@ -139,6 +146,8 @@ public class CommandTest {
 
     @Test
     public void userNotExistResetCommandTest() {
+        Mockito.doThrow(NoSuchChatException.class).when(client).deleteChat(anyLong());
+
         Command command = new ResetCommand(client, botService);
         command.execute(update);
 
@@ -147,7 +156,7 @@ public class CommandTest {
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
-            "Вы и так не были зарегестрированы в боте.");
+            "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу с ботом");
     }
 
     @Test
@@ -175,13 +184,14 @@ public class CommandTest {
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
-            "Вы уже зарегестрированы в боте. Чтобы сбросить ссылки отправьте команду /reset");
+            "Вы успешно запустили бота. Теперь вы можете отслеживать ссылки. " +
+                "Чтобы узнать больше, используйте команду /help");
     }
 
     @Test
     public void trackCommandTest() {
-        when(client.addLink(any(), any())).thenReturn(null);
-        when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
+        when(client.addLink(anyLong(), anyString())).thenReturn(null);
+        when(parser.parse(any(String.class))).thenReturn(Optional.of(link));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
         Command command = new TrackCommand(client, parser, botService);
@@ -197,8 +207,8 @@ public class CommandTest {
 
     @Test
     public void userNotExistTrackCommandTest() {
-        when(client.addLink(any(), any())).thenReturn(mock(LinkResponse.class));
-        when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
+        when(client.addLink(anyLong(), anyString())).thenThrow(NoSuchChatException.class);
+        when(parser.parse(anyString())).thenReturn(Optional.of(link));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
         Command command = new TrackCommand(client, parser, botService);
@@ -214,8 +224,8 @@ public class CommandTest {
 
     @Test
     public void linkAlreadyExistTrackCommandTest() {
-        when(client.addLink(any(), any())).thenReturn(null);
-        when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
+        when(client.addLink(anyLong(), anyString())).thenThrow(AlreadySubscribedException.class);
+        when(parser.parse(any(String.class))).thenReturn(Optional.of(link));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
         Command command = new TrackCommand(client, parser, botService);
@@ -262,8 +272,8 @@ public class CommandTest {
 
     @Test
     public void untrackCommandTest() {
-        when(client.deleteLink(any(), any())).thenReturn(null);
-        when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
+        when(client.deleteLink(anyLong(), anyString())).thenReturn(null);
+        when(parser.parse(any(String.class))).thenReturn(Optional.of(link));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
         Command command = new UntrackCommand(client, parser, botService);
@@ -278,8 +288,8 @@ public class CommandTest {
 
     @Test
     public void userNotExistUntrackCommandTest() {
-        when(client.deleteLink(any(), any())).thenReturn(null);
-        when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
+        when(client.deleteLink(anyLong(), anyString())).thenThrow(NoSuchChatException.class);
+        when(parser.parse(any(String.class))).thenReturn(Optional.of(link));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
         Command command = new UntrackCommand(client, parser, botService);
@@ -290,13 +300,13 @@ public class CommandTest {
 
         assertThat(captor.getAllValues()).size().isEqualTo(1);
         assertThat(captor.getAllValues().getFirst()).isEqualTo(
-            "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу");
+            "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу с ботом");
     }
 
     @Test
     public void linkNotExistUntrackCommandTest() {
-        when(client.deleteLink(any(), any())).thenReturn(null);
-        when(parser.parse(any(String.class))).thenReturn(Optional.of(mock(Link.class)));
+        when(client.deleteLink(anyLong(), anyString())).thenThrow(NoSuchLinkException.class);
+        when(parser.parse(any(String.class))).thenReturn(Optional.of(link));
         when(parser.getUri(any(Update.class))).thenReturn(Optional.of("uri"));
 
         Command command = new UntrackCommand(client, parser, botService);
