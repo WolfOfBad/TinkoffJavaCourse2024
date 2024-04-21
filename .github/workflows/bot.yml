@@ -37,7 +37,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: bot/
-          file: ./bot.Dockerfile
           push: true
           tags: ghcr.io/wolfofbad/bot:latest
 
