@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.model.command.Command;
+import io.micrometer.core.instrument.Counter;
 import java.util.List;
 import io.micrometer.core.instrument.Counter;
 import org.apache.logging.log4j.LogManager;
