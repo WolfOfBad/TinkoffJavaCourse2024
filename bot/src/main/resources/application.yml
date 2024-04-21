@@ -1,7 +1,7 @@
 app:
   # Add your token in environment variables
   telegram-token: ${APP_TELEGRAM_TOKEN}
-  scrapper-url: http://localhost:8080
+  scrapper-url: http://localhost:8081
   backoff:
     type: exponential
     wait-time: 1s
@@ -41,3 +41,15 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health, info, prometheus
+      path-mapping:
+        prometheus: /metrics

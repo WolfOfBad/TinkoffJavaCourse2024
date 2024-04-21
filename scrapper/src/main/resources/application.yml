@@ -68,7 +68,7 @@ spring:
     enabled: false
 
 server:
-  port: 8080
+  port: 8081
 
 logging:
   config: classpath:log4j2-plain.xml
@@ -76,3 +76,15 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health, info, prometheus
+      path-mapping:
+        prometheus: /metrics

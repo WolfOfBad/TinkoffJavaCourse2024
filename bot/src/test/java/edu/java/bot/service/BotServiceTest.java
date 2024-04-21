@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.response.SendResponse;
 import edu.java.bot.model.command.Command;
 import java.util.List;
+import io.micrometer.core.instrument.Counter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,9 @@ class BotServiceTest {
     @Mock
     private SendResponse response;
 
+    @Mock
+    private Counter counter;
+
     @BeforeEach
     public void before() {
         when(response.isOk()).thenReturn(true);
@@ -42,7 +46,7 @@ class BotServiceTest {
         when(parser.parse(any(Update.class))).thenReturn(mock(Command.class));
         when(update.message()).thenReturn(mock(Message.class));
 
-        BotService service = new BotService(bot, parser);
+        BotService service = new BotService(bot, parser, counter);
         service.process(List.of(update));
         service.close();
 

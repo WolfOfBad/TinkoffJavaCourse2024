@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.model.command.Command;
+import io.micrometer.core.instrument.Counter;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,10 +18,12 @@ public class BotService implements UpdatesListener, AutoCloseable {
     private final CommandParser parser;
     private final Logger logger = LogManager.getLogger();
     private final TelegramBot bot;
+    private final Counter counter;
 
-    public BotService(TelegramBot bot, CommandParser parser) {
+    public BotService(TelegramBot bot, CommandParser parser, Counter counter) {
         this.bot = bot;
         this.parser = parser;
+        this.counter = counter;
 
         setCommandsMenu();
 
@@ -63,6 +66,8 @@ public class BotService implements UpdatesListener, AutoCloseable {
 
             Command command = parser.parse(update);
             command.execute(update);
+
+            counter.increment();
         }
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
