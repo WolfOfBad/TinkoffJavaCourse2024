@@ -1,11 +1,12 @@
 package edu.java.bot.model.command.impl;
 
 import com.pengrad.telegrambot.model.Update;
+import edu.java.bot.client.scrapper.ScrapperClient;
+import edu.java.bot.exception.scrapper.ScrapperException;
 import edu.java.bot.model.User;
 import edu.java.bot.model.command.Command;
 import edu.java.bot.model.link.Link;
 import edu.java.bot.model.link.parser.LinkParserManager;
-import edu.java.bot.repository.UserRepository;
 import edu.java.bot.service.SendMessageService;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class UntrackCommand implements Command {
-    private final UserRepository repository;
+    private final ScrapperClient client;
     private final LinkParserManager parser;
     private final SendMessageService sendMessageService;
     private final Logger logger = LogManager.getLogger();
@@ -54,19 +55,12 @@ public class UntrackCommand implements Command {
 
         }
 
-        UserRepository.Result result = repository.deleteLink(user, link.get());
+        try {
+            client.deleteLink(user.id(), link.get().uri().toString());
 
-        return switch (result) {
-            case OK -> "Вы прекратили отслеживание ссылки";
-
-            case USER_NOT_EXIST -> "Вы не зарегестрированны в боте. Напишите /start, чтобы начать работу";
-
-            case LINK_NOT_EXIST -> "Вы не отслеживали эту ссылку. "
-                + "Введите /list, чтобы увидеть все отслеживаемые ссылки";
-
-            default ->
-                throw new Exception("Unexpected switch result. Class: " + this.getClass() + " Result: " + result);
-        };
+            return "Вы прекратили отслеживание ссылки";
+        } catch (ScrapperException e) {
+            return e.getTelegramMessage();
+        }
     }
-
 }

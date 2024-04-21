@@ -2,6 +2,7 @@ package edu.java.bot.retry;
 
 import edu.java.bot.client.WireMockServerExtension;
 import edu.java.bot.client.scrapper.ScrapperClient;
+import edu.java.bot.client.scrapper.ScrapperExceptionHandler;
 import edu.java.bot.configuration.ApplicationConfigProperties;
 import edu.java.bot.retry.impl.ConstantBackoff;
 import edu.java.bot.retry.impl.ExponentialBackoff;
@@ -14,20 +15,28 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.internal.matchers.Any;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.when;
 
-@ExtendWith(WireMockServerExtension.class)
+@ExtendWith({WireMockServerExtension.class, MockitoExtension.class})
 public class RetryExchangeFilterTest {
+    @Mock
+    private ScrapperExceptionHandler scrapperExceptionHandler;
+
 
     @BeforeEach
     public void before() {
         WireMockServerExtension.getWireMockServer().stubFor(post(urlPathMatching("/tg-chat/1"))
             .willReturn(aResponse()
-                .withStatus(400)
+                .withStatus(501)
                 .withHeader("Content-Type", "application/json")
                 .withBody("""
                     {
@@ -54,7 +63,7 @@ public class RetryExchangeFilterTest {
             type,
             5,
             Duration.ofSeconds(1),
-            List.of(HttpStatus.BAD_REQUEST)
+            List.of(HttpStatus.NOT_IMPLEMENTED)
         );
         RetryExchangeFilter retryExchangeFilter = new RetryExchangeFilter(
             policy,
@@ -63,7 +72,8 @@ public class RetryExchangeFilterTest {
 
         ScrapperClient client = new ScrapperClient(
             "http://localhost:" + WireMockServerExtension.getPort(),
-            retryExchangeFilter
+            retryExchangeFilter,
+            new ScrapperExceptionHandler()
         );
 
         assertThatThrownBy(() -> client.registerChat(1))
