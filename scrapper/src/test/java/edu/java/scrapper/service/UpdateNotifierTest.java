@@ -1,6 +1,7 @@
 package edu.java.scrapper.service;
 
 import edu.java.scrapper.client.bot.BotClient;
+import edu.java.scrapper.client.bot.dto.request.LinkUpdateRequest;
 import edu.java.scrapper.domain.dto.Link;
 import edu.java.scrapper.domain.dto.TelegramChat;
 import java.net.URI;
@@ -12,8 +13,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,7 +21,7 @@ public class UpdateNotifierTest {
     private BotClient botClient;
 
     @Captor
-    private ArgumentCaptor<List<Long>> tgChatIdCaptor;
+    private ArgumentCaptor<LinkUpdateRequest> tgChatIdCaptor;
 
     @Test
     public void notifyUsersTest() {
@@ -35,9 +34,9 @@ public class UpdateNotifierTest {
 
         updateNotifier.notifyUsers(link, List.of(chat1, chat2, chat3), "string");
 
-        verify(botClient).sendUpdate(anyLong(), anyString(), anyString(), tgChatIdCaptor.capture());
+        verify(botClient).send(tgChatIdCaptor.capture());
 
-        assertThat(tgChatIdCaptor.getAllValues().getFirst()).containsExactly(111L, 222L, 333L);
+        assertThat(tgChatIdCaptor.getAllValues().getFirst().telegramChatId()).containsExactly(111L, 222L, 333L);
     }
 
 }

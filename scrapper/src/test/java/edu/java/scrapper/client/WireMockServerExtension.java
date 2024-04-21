@@ -10,7 +10,7 @@ public class WireMockServerExtension implements BeforeAllCallback, ExtensionCont
     @Getter
     private static WireMockServer wireMockServer;
     @Getter
-    private static final int port = 8080;
+    private static final int port = 8081;
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) {

@@ -1,6 +1,7 @@
 package edu.java.scrapper.configuration;
 
 import edu.java.scrapper.client.bot.BotClient;
+import edu.java.scrapper.client.bot.http.HttpBotClient;
 import edu.java.scrapper.client.github.GithubClient;
 import edu.java.scrapper.client.stackoverflow.StackoverflowClient;
 import edu.java.scrapper.retry.BackoffPolicy;
@@ -8,6 +9,7 @@ import edu.java.scrapper.retry.RetryExchangeFilter;
 import edu.java.scrapper.retry.impl.ConstantBackoff;
 import edu.java.scrapper.retry.impl.ExponentialBackoff;
 import edu.java.scrapper.retry.impl.LinearBackoff;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,9 +42,10 @@ public class ClientConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(prefix = "app", name = "bot-api", havingValue = "http")
     public BotClient botClient(ApplicationConfigProperties properties) {
         ApplicationConfigProperties.ClientProperties config = properties.botProperties();
-        return new BotClient(
+        return new HttpBotClient(
             config.baseUrl(),
             new RetryExchangeFilter(
                 getPolicy(config.backoff()),
